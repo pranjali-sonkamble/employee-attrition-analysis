@@ -16,28 +16,21 @@
 
 \- \*\*Date accessed:\*\* 21 October 2026
 
-\- \*\*Dataset description:\*\* The Kaggle listing describes the dataset as fictional employee data created by IBM data scientists. The exact wording should be verified against the dataset page.
+- **Dataset description:** The Kaggle page describes the dataset as "a fictional data set created by IBM data scientists."
 
 
+## Licence
 
-\## Licence Information
+Licence shown on the Kaggle page (accessed 21 October 2026):
 
+Database: Open Database, Contents: Database Contents
 
+- Open Database License (ODbL) 1.0:
+  https://opendatacommons.org/licenses/odbl/1-0/
+- Database Contents License (DbCL) 1.0:
+  https://opendatacommons.org/licenses/dbcl/1-0/
 
-\- \*\*Database Contents License (DbCL):\*\* Version 1.0
-
-\- \*\*Official licence text:\*\* https://opendatacommons.org/licenses/dbcl/1-0/
-
-\- \*\*Kaggle licence field:\*\* Exact licence labels displayed on the Kaggle dataset page have not yet been independently confirmed.
-
-
-
-The DbCL v1.0 licenses certain rights in individual database contents. Section 2.2 requires compliance with the Open Database License (ODbL), while Section 2.3 explains that the DbCL does not itself cover database rights or database copyright.
-
-
-
-The applicable terms must be reviewed before redistributing the original CSV. The licence information recorded here does not, by itself, establish that redistribution of this particular dataset is permitted.
-
+The ODbL governs the database, while the DbCL addresses rights in individual database contents. Consult the official licence texts for the applicable terms.
 
 
 \## Intended Use
