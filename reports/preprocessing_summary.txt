@@ -1,0 +1,11 @@
+PREPROCESSING VALIDATION
+==================================================
+Training rows: 1176
+Test rows: 294
+Input features: 30
+Transformed training shape: (1176, 51)
+Categorical features: 7
+Ordinal features: 8
+Other numeric features: 15
+Missing values in transformed training data: 0
+Test data used for fitting: No
