@@ -1,0 +1,2 @@
+model,threshold,test_rows,test_attrition_cases,average_precision,roc_auc,precision,recall,f1
+Logistic Regression,0.5,294,47,0.5612212444049638,0.8031699543457662,0.3488372093023256,0.6382978723404256,0.45112781954887216
