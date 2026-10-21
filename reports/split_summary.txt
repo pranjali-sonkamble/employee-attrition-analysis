@@ -1,0 +1,12 @@
+TRAIN/TEST SPLIT SUMMARY
+==================================================
+test_size=0.2, random_state=42, stratified=True
+Dropped columns: ['EmployeeNumber', 'EmployeeCount', 'Over18', 'StandardHours']
+Feature count: 30
+
+Train: 1176 rows, 190 leavers (0.1616)
+Test:  294 rows, 47 leavers (0.1599)
+
+Index overlap between train and test: 0
+Missing values in train features: 0
+Feature columns: ['Age', 'BusinessTravel', 'DailyRate', 'Department', 'DistanceFromHome', 'Education', 'EducationField', 'EnvironmentSatisfaction', 'Gender', 'HourlyRate', 'JobInvolvement', 'JobLevel', 'JobRole', 'JobSatisfaction', 'MaritalStatus', 'MonthlyIncome', 'MonthlyRate', 'NumCompaniesWorked', 'OverTime', 'PercentSalaryHike', 'PerformanceRating', 'RelationshipSatisfaction', 'StockOptionLevel', 'TotalWorkingYears', 'TrainingTimesLastYear', 'WorkLifeBalance', 'YearsAtCompany', 'YearsInCurrentRole', 'YearsSinceLastPromotion', 'YearsWithCurrManager']
