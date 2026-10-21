@@ -8,4 +8,4 @@ Categorical features: 7
 Ordinal features: 8
 Other numeric features: 15
 Missing values in transformed training data: 0
-Test data used for fitting: No
+Preprocessor fitted on training rows only (by construction)

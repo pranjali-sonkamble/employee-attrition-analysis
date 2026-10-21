@@ -112,7 +112,7 @@ if __name__ == "__main__":
         f"Other numeric features: {len(NUMERIC_FEATURES)}",
         f"Missing values in transformed training data: "
         f"{int(__import__('numpy').isnan(X_train_transformed).sum())}",
-        "Test data used for fitting: No",
+        "Preprocessor fitted on training rows only (by construction)",
     ]
 
     from pathlib import Path
