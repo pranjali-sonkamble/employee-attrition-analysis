@@ -1,0 +1,74 @@
+DATASET INSPECTION
+==================================================
+
+Shape (rows, columns):
+(1470, 35)
+
+Column data types:
+Age                          int64
+Attrition                   object
+BusinessTravel              object
+DailyRate                    int64
+Department                  object
+DistanceFromHome             int64
+Education                    int64
+EducationField              object
+EmployeeCount                int64
+EmployeeNumber               int64
+EnvironmentSatisfaction      int64
+Gender                      object
+HourlyRate                   int64
+JobInvolvement               int64
+JobLevel                     int64
+JobRole                     object
+JobSatisfaction              int64
+MaritalStatus               object
+MonthlyIncome                int64
+MonthlyRate                  int64
+NumCompaniesWorked           int64
+Over18                      object
+OverTime                    object
+PercentSalaryHike            int64
+PerformanceRating            int64
+RelationshipSatisfaction     int64
+StandardHours                int64
+StockOptionLevel             int64
+TotalWorkingYears            int64
+TrainingTimesLastYear        int64
+WorkLifeBalance              int64
+YearsAtCompany               int64
+YearsInCurrentRole           int64
+YearsSinceLastPromotion      int64
+YearsWithCurrManager         int64
+
+Missing values per column:
+None
+
+Duplicate rows:
+0
+
+Constant columns (one unique value):
+['EmployeeCount', 'Over18', 'StandardHours']
+
+Target distribution: Attrition
+
+Counts:
+Attrition
+No     1233
+Yes     237
+
+Proportions:
+Attrition
+No     0.8388
+Yes    0.1612
+
+Unique values in categorical columns:
+Attrition: ['Yes', 'No']
+BusinessTravel: ['Travel_Rarely', 'Travel_Frequently', 'Non-Travel']
+Department: ['Sales', 'Research & Development', 'Human Resources']
+EducationField: ['Life Sciences', 'Other', 'Medical', 'Marketing', 'Technical Degree', 'Human Resources']
+Gender: ['Female', 'Male']
+JobRole: ['Sales Executive', 'Research Scientist', 'Laboratory Technician', 'Manufacturing Director', 'Healthcare Representative', 'Manager', 'Sales Representative', 'Research Director', 'Human Resources']
+MaritalStatus: ['Single', 'Married', 'Divorced']
+Over18: ['Y']
+OverTime: ['Yes', 'No']
