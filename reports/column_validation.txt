@@ -1,0 +1,100 @@
+COLUMN VALIDATION
+==================================================
+
+Identifier check: EmployeeNumber
+nunique: 1470 of 1470
+min/max: 1 2068
+
+Constant columns:
+EmployeeCount: [1]
+Over18: ['Y']
+StandardHours: [80]
+
+Coded ordinal candidates (value counts, sorted by value):
+
+Education:
+Education
+1    170
+2    282
+3    572
+4    398
+5     48
+
+EnvironmentSatisfaction:
+EnvironmentSatisfaction
+1    284
+2    287
+3    453
+4    446
+
+JobInvolvement:
+JobInvolvement
+1     83
+2    375
+3    868
+4    144
+
+JobSatisfaction:
+JobSatisfaction
+1    289
+2    280
+3    442
+4    459
+
+RelationshipSatisfaction:
+RelationshipSatisfaction
+1    276
+2    303
+3    459
+4    432
+
+WorkLifeBalance:
+WorkLifeBalance
+1     80
+2    344
+3    893
+4    153
+
+PerformanceRating:
+PerformanceRating
+3    1244
+4     226
+
+StockOptionLevel:
+StockOptionLevel
+0    631
+1    596
+2    158
+3     85
+
+JobLevel:
+JobLevel
+1    543
+2    534
+3    218
+4    106
+5     69
+
+Numeric summary:
+                          count      mean      std     min     25%      50%       75%      max
+Age                      1470.0     36.92     9.14    18.0    30.0     36.0     43.00     60.0
+DailyRate                1470.0    802.49   403.51   102.0   465.0    802.0   1157.00   1499.0
+DistanceFromHome         1470.0      9.19     8.11     1.0     2.0      7.0     14.00     29.0
+HourlyRate               1470.0     65.89    20.33    30.0    48.0     66.0     83.75    100.0
+MonthlyIncome            1470.0   6502.93  4707.96  1009.0  2911.0   4919.0   8379.00  19999.0
+MonthlyRate              1470.0  14313.10  7117.79  2094.0  8047.0  14235.5  20461.50  26999.0
+NumCompaniesWorked       1470.0      2.69     2.50     0.0     1.0      2.0      4.00      9.0
+PercentSalaryHike        1470.0     15.21     3.66    11.0    12.0     14.0     18.00     25.0
+TotalWorkingYears        1470.0     11.28     7.78     0.0     6.0     10.0     15.00     40.0
+TrainingTimesLastYear    1470.0      2.80     1.29     0.0     2.0      3.0      3.00      6.0
+YearsAtCompany           1470.0      7.01     6.13     0.0     3.0      5.0      9.00     40.0
+YearsInCurrentRole       1470.0      4.23     3.62     0.0     2.0      3.0      7.00     18.0
+YearsSinceLastPromotion  1470.0      2.19     3.22     0.0     0.0      1.0      3.00     15.0
+YearsWithCurrManager     1470.0      4.12     3.57     0.0     2.0      3.0      7.00     17.0
+
+Logical consistency checks (count of violating rows):
+YearsAtCompany > TotalWorkingYears: 0
+YearsInCurrentRole > YearsAtCompany: 0
+YearsWithCurrManager > YearsAtCompany: 0
+YearsSinceLastPromotion > YearsAtCompany: 0
+Age - TotalWorkingYears < 14 (started work under 14): 0
