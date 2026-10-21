@@ -106,7 +106,7 @@ def main():
     print("\nSaved reports/final_test_metrics.csv")
     print("Saved reports/final_test_confusion_matrix.csv")
     print("Saved reports/figures/final_test_confusion_matrix.png")
-    print("The test set was not used for model or threshold selection.")
+    print("The model and threshold were fixed before this run.")
 
 
 if __name__ == "__main__":
