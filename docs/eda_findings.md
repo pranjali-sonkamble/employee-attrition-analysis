@@ -20,7 +20,7 @@
 
 - Employees in the Single marital-status group had an attrition rate of **25.53%**.
 - Employees aged 30 or below had an attrition rate of **25.91%**.
-- Attrition rates across the age bands were **25.91%** for ages up to 30, **16.02%** for the next band, **8.92%** for the 37–43 band, and **12.10%** for the oldest band. The pattern is not monotonic: the rate falls through the 37–43 band and then rises in the oldest band.
+- Attrition rates across the age bands were **25.91%** for ages up to 30, **16.02%** for ages 31 to 36, **8.92%** for ages 37 to 43, and **12.10%** for ages 44 to 60. The pattern is not monotonic: the rate falls through the 37 to 43 band and then rises in the oldest band.
 
 ### Job roles
 
@@ -35,8 +35,10 @@
 
 ### Sample-size cautions
 
-- The Human Resources department contains 63 records, and the Human Resources education-field group contains 27. Their observed attrition rates are based on relatively small groups.
-- The Sales Representative rate of 39.76% is based on 83 employees, so it should be interpreted alongside the group size.
+- The Human Resources department contains 63 records, and the Human Resources education-field group contains 27 records. Their observed attrition rates are based on relatively small groups.
+- The Sales Representative attrition rate of 39.76% is based on 83 employees and should be interpreted alongside the group size.
+- Some ordinal levels also have relatively small samples: JobInvolvement level 1 (83 records), WorkLifeBalance level 1 (80 records), StockOptionLevel level 3 (85 records), and Education level 5 (48 records).
+- The 17.65% attrition rate for StockOptionLevel level 3 represents approximately 15 employees. It should not be interpreted as a reliable trend on its own.
 - Group-level percentages are descriptive estimates and may be less stable for smaller groups.
 
 ## 3. Correlation and ordinal-feature findings
@@ -53,7 +55,11 @@ The strongest absolute Pearson correlations observed among the examined numeric 
 | YearsWithCurrManager and YearsAtCompany | 0.77 |
 | YearsAtCompany and YearsInCurrentRole | 0.76 |
 
-These correlations indicate that some predictors contain overlapping information. In particular, the strong correlation between MonthlyIncome and JobLevel should be considered when interpreting Logistic Regression coefficients. Correlation alone does not establish causation or require automatic feature removal.
+These correlations indicate that some predictors contain overlapping information. In particular, the strong correlation between MonthlyIncome and JobLevel should be considered when interpreting Logistic Regression coefficients.
+
+Income, job level, and total working years form a correlated group of features. The tenure-related variables also show strong correlations with one another. Correlated features may share or divide predictive importance, so feature importance results should be interpreted with these relationships in mind. Correlation alone does not establish causation or require automatic feature removal.
+
+DailyRate, HourlyRate, and MonthlyRate show weak pairwise linear correlations with the other examined numeric features in this dataset. This observation alone does not establish that these variables are irrelevant to attrition. Their predictive usefulness will be evaluated during modelling, with permutation importance considered in Phase 8.
 
 ### Ordinal-feature patterns
 
@@ -61,8 +67,10 @@ These correlations indicate that some predictors contain overlapping information
 - **JobInvolvement:** Attrition was 33.73% at level 1 and 9.03% at level 4.
 - **JobSatisfaction:** Attrition was 22.84% at level 1 and 11.33% at level 4.
 - **WorkLifeBalance:** Attrition was 31.25% at level 1, 14.22% at level 3, and 17.65% at level 4.
-- **StockOptionLevel:** Attrition was 24.41% at level 0, 7.59% at level 2, and 17.65% at level 3.
+- **StockOptionLevel:** Attrition was 24.41% at level 0 (631 records), 9.40% at level 1 (596 records), 7.59% at level 2 (158 records), and 17.65% at level 3 (85 records).
 - **PerformanceRating:** Attrition was 16.08% at level 3 and 16.37% at level 4.
+
+The StockOptionLevel pattern is non-monotonic: the observed rate decreases from level 0 through level 2 and rises at level 3. The level 3 estimate is based on only 85 records.
 
 These patterns are descriptive associations. They do not demonstrate that changing a feature will cause attrition to change. Rates for levels with relatively few records require particular caution.
 
@@ -72,7 +80,7 @@ These patterns are descriptive associations. They do not demonstrate that changi
 2. Accuracy alone is insufficient for evaluating a predictive model. Recall, precision, F1, PR-AUC, and the confusion matrix will also be considered.
 3. `EmployeeNumber` is a unique identifier and should not be used as a predictive feature.
 4. `EmployeeCount`, `Over18`, and `StandardHours` are constant in this dataset and should be excluded from modelling.
-5. Numeric predictors are correlated. Their effects and coefficients should be interpreted carefully during modelling.
+5. Numeric predictors are correlated. Their effects, coefficients, and feature importance should be interpreted carefully during modelling.
 6. Any learned preprocessing, feature selection, resampling, or model tuning must be fitted using training data only. The final test set must remain separate from model selection.
 
 ## 5. Fairness and responsible use
@@ -85,7 +93,7 @@ The project is an educational analytical demonstration, not a validated employme
 
 - These findings describe associations in the supplied dataset; they do not establish causation.
 - Group sizes differ, so percentages should be interpreted alongside record counts.
-- Correlations describe linear relationships between numeric features and do not establish causal relationships.
+- Pearson correlations describe linear relationships between numeric features and do not establish causal relationships.
 - This dataset does not establish that the same patterns apply to a real organisation.
 - Predictions from this project are for learning and analytical demonstration, not for making employment decisions about individuals.
 
