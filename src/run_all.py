@@ -16,6 +16,8 @@ STAGES = [
     "src/model_interpretation.py",
     "src/subgroup_evaluation.py",
     "src/sensitive_attribute_ablation.py",
+    "src/rule_baseline.py",
+    "src/segment_statistics.py",
 ]
 
 
