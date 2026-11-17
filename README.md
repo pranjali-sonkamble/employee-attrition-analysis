@@ -190,7 +190,20 @@ The ablation script reports held-out Average Precision, recall, precision, ROC-A
 python src/sensitive_attribute_ablation.py
 ```
 
-Results are saved to [reports/sensitive_attribute_ablation.csv](reports/sensitive_attribute_ablation.csv) and [reports/sensitive_attribute_ablation_subgroups.csv](reports/sensitive_attribute_ablation_subgroups.csv). The detailed methodology and interpretation are documented in [docs/sensitive_attribute_ablation.md](docs/sensitive_attribute_ablation.md).
+### Ablation results
+
+| Metric | Full model | Without Age/Gender/MaritalStatus |
+|---|---:|---:|
+| Average Precision | **0.5612** | **0.5433** |
+| ROC-AUC | **0.8032** | **0.7801** |
+| Precision | **0.3488** | **0.3659** |
+| Recall | **0.6383** | **0.6383** |
+| Flag rate | **29.25%** | **27.89%** |
+| False positives | 56 | 52 |
+
+Removing the three attributes reduced Average Precision by 0.0179 and ROC-AUC by 0.0231, while recall remained unchanged at 63.83% at the fixed 0.50 threshold. Gender recall was also unchanged (Female 68.75%; Male 61.29%). Age-group recall varied after exclusion: 18–30 decreased from 77.78% to 72.22%, 31–36 from 72.73% to 63.64%, 37–43 increased from 71.43% to 85.71%, and 44+ increased from 27.27% to 36.36%. These subgroup counts are limited, so the differences are diagnostic rather than evidence of production-level fairness.
+
+The detailed methodology and interpretation are documented in [docs/sensitive_attribute_ablation.md](docs/sensitive_attribute_ablation.md), with machine-generated results in [reports/sensitive_attribute_ablation.csv](reports/sensitive_attribute_ablation.csv) and [reports/sensitive_attribute_ablation_subgroups.csv](reports/sensitive_attribute_ablation_subgroups.csv).
 
 ## Subgroup diagnostics
 
@@ -290,6 +303,8 @@ employee-attrition-analysis/
 │   ├── relationship_summary.txt
 │   ├── split_summary.txt
 │   ├── subgroup_evaluation.csv
+│   ├── sensitive_attribute_ablation.csv
+│   ├── sensitive_attribute_ablation_subgroups.csv
 │   ├── test_uncertainty.csv
 │   └── threshold_evaluation.csv
 ├── src/
