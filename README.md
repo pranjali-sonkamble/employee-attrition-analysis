@@ -24,7 +24,7 @@ An end-to-end analytical prototype for understanding employee attrition patterns
 | Test Average Precision | **0.5612** |
 | Test precision / recall | **0.3488 / 0.6383** |
 | Bootstrap resamples | 2,000 |
-| Regression tests | 16 expected after behavior checks (6 added) |
+| Regression tests | **10 committed tests** |
 
 The source dataset is a **fictional benchmark**. These findings are not claims about IBM's actual workforce or any real employer.
 
@@ -72,7 +72,7 @@ These are descriptive or predictive results from a fictional benchmark dataset. 
 ## Recruiter deliverables
 
 - [One-page recruiter summary](docs/recruiter_summary.md) — concise project scope, results, business findings, and responsible-AI evaluation.
-- [Excel recruiter dashboard](docs/dashboard.md) — KPI and model/segment/subgroup views built from the same verified project outputs.
+- [Excel recruiter dashboard](docs/dashboard.md) — KPI and model/segment/subgroup views built from the same verified project outputs. [Download the workbook](dashboard/Employee_Attrition_Recruiter_Dashboard.xlsx).
 - [Calibration analysis](docs/calibration.md) — held-out reliability analysis and reproduction instructions for the calibration plot.
 
 ## Business recommendations
@@ -102,8 +102,7 @@ The confusion matrix makes the operational trade-off explicit: the model catches
 
 ### Coefficient plot
 
-![Model coefficients](reports/figures/model_coefficients.png
-- `reports/figures/calibration_curve.png`)
+![Model coefficients](reports/figures/model_coefficients.png)
 
 ## Exploratory analysis
 
