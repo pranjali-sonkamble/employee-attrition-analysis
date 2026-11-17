@@ -2,7 +2,7 @@
 
 ## Selected Model
 
-Logistic Regression was selected before the final held-out test evaluation, based on repeated stratified five-fold cross-validation across three repeats. The regenerated model-comparison results show mean average precision of 0.6130 and mean ROC-AUC of 0.8251, outperforming the other evaluated classification models on these metrics.
+Logistic Regression was retained for the final held-out test evaluation because it was the strongest among the **fixed configurations tested** under repeated stratified five-fold cross-validation. The regenerated model-comparison results show mean average precision of 0.6130 and mean ROC-AUC of 0.8251. This does not establish global optimality because the Random Forest and HistGradientBoosting configurations were not separately hyperparameter-tuned.
 
 The model and threshold were fixed before the final test evaluation. No hyperparameter tuning was performed as part of the final test evaluation.
 
