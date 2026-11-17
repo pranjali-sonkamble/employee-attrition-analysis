@@ -275,7 +275,7 @@ python src/subgroup_evaluation.py
 python src/sensitive_attribute_ablation.py
 ```
 
-The existing suite had 10 regression tests; this revision adds 6 behavior-focused tests covering split stratification, train/test ID separation, threshold behavior, metric correctness, the rules baseline condition, and confidence-interval behavior. After the local run, the expected total is 16 passing tests. GitHub Actions runs the regression suite on pushes to `main` and pull requests using the pinned lock file on Ubuntu Linux.
+The committed test suite currently contains 10 regression tests covering dataset loading, target/drop-column validation, feature counts, reproducible stratified splitting, preprocessing structure, missing-value safety, pipeline structure, probability output, and binary predictions. GitHub Actions runs the regression suite on pushes to `main` and pull requests using the pinned lock file on Ubuntu Linux.
 
 ## Repository structure
 
@@ -284,6 +284,9 @@ employee-attrition-analysis/
 ├── data/
 │   └── README.md
 ├── docs/
+│   ├── recruiter_summary.md
+│   ├── dashboard.md
+│   ├── calibration.md
 │   ├── data_source.md
 │   ├── eda_findings.md
 │   ├── final_evaluation.md
@@ -329,12 +332,17 @@ employee-attrition-analysis/
 │   ├── preprocessing.py
 │   ├── subgroup_evaluation.py
 │   ├── sensitive_attribute_ablation.py
+│   ├── rule_baseline.py
+│   ├── segment_statistics.py
+│   ├── calibration.py
 │   ├── test_uncertainty.py
 │   ├── train_models.py
 │   ├── run_all.py
 │   └── validate_columns.py
 ├── tests/
 │   └── test_data_pipeline.py
+├── dashboard/
+│   └── Employee_Attrition_Recruiter_Dashboard.xlsx
 ├── .gitignore
 ├── LICENSE
 ├── requirements-lock.txt
