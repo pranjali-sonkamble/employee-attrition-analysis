@@ -72,7 +72,7 @@ These are descriptive or predictive results from a fictional benchmark dataset. 
 ## Recruiter deliverables
 
 - [One-page recruiter summary](docs/recruiter_summary.md) — concise project scope, results, business findings, and responsible-AI evaluation.
-- [Excel recruiter dashboard](dashboard/Employee_Attrition_Recruiter_Dashboard.xlsx) — KPI and model/segment/subgroup views built from the same verified project outputs.
+- [Excel recruiter dashboard](docs/dashboard.md) — KPI and model/segment/subgroup views built from the same verified project outputs.
 - [Calibration analysis](docs/calibration.md) — held-out reliability analysis and reproduction instructions for the calibration plot.
 
 ## Business recommendations
