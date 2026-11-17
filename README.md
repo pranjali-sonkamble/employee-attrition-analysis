@@ -67,7 +67,7 @@ The raw CSV is not committed. See [data/README.md](data/README.md) for download 
 | Final test precision | **34.88%** |
 | Test false positives | **56 of 86 flagged records** |
 
-These are descriptive or predictive results from a fictional benchmark dataset. They should not be interpreted as causal effects or evidence about a real employer.
+The segment analysis found statistically significant associations in this benchmark (chi-square tests, p < 0.001 for overtime, Sales Representative membership, and early tenure). Overtime attrition was 30.53% (95% CI: 26.30%–35.12%), and Sales Representative attrition was 39.76% (95% CI: 29.91%–50.52%, n=83). These are descriptive or predictive results from a fictional benchmark dataset and should not be interpreted as causal effects or evidence about a real employer.
 
 ## Recruiter deliverables
 
@@ -161,9 +161,16 @@ The model identified 30 of 47 attrition cases and missed 17. It flagged 86 recor
 
 Full detail: [final evaluation](docs/final_evaluation.md), [test metrics](reports/final_test_metrics.csv), and [confusion matrix](reports/final_test_confusion_matrix.csv).
 
-## Simple rules baseline\n\nA fixed, interpretable baseline flags an employee when **OverTime = Yes AND YearsAtCompany <= 3**. It is evaluated on the same held-out test partition as the frozen Logistic Regression, without fitting or tuning the rule. This provides a direct check of whether the ML model adds predictive value beyond a simple business-rule heuristic. Run `python src/rule_baseline.py`; the generated comparison is saved to `reports/rule_baseline_comparison.csv`.
+## Simple rules baseline
 
-The comparison should be interpreted on the same test partition and at the same 0.50 decision threshold. A stronger ML result is evidence of incremental predictive value in this benchmark, not evidence that the rule or model is causally explanatory.
+A fixed, interpretable baseline flags an employee when **OverTime = Yes AND YearsAtCompany <= 3**. It is evaluated on the same held-out test partition as the frozen Logistic Regression, without fitting or tuning the rule. This provides a direct check of whether the ML model adds predictive value beyond a simple business-rule heuristic.
+
+| Method | Precision | Recall | F1 | Flag rate |
+|---|---:|---:|---:|---:|
+| Logistic Regression | **0.3488** | **0.6383** | **0.4511** | 29.25% |
+| Overtime + short-tenure rule | **0.5484** | 0.3617 | 0.4359 | **10.54%** |
+
+The Logistic Regression provides substantially higher recall and slightly higher F1 than the rule, identifying 30 versus 17 of the 47 observed attrition cases. The rule has higher precision and a much lower review/flag rate. This is evidence of a different coverage-versus-workload trade-off in the benchmark, not evidence that the model or rule is causally explanatory. Run `python src/rule_baseline.py`; the generated comparison is saved to `reports/rule_baseline_comparison.csv`.
 
 ## Uncertainty analysis
 
@@ -186,23 +193,11 @@ The largest positive associations included Laboratory Technician job role (coeff
 
 See [model interpretation](docs/model_interpretation.md) and [coefficient output](reports/model_interpretation.csv).
 
-## Protected attributes
+## Sensitive attributes, ablation, and subgroup diagnostics
 
-`Age`, `Gender`, and `MaritalStatus` are included in the primary model because they are part of the benchmark schema and the primary specification uses the available modeling features rather than excluding these columns a priori. A separate **sensitive-attribute ablation** removes all three from model inputs while keeping the same train/test split, model specification, and threshold; see [Sensitive-attribute ablation](docs/sensitive_attribute_ablation.md) and the generated CSV results. These attributes are also retained in the evaluation data for subgroup grouping. They must not be used to make or justify employment decisions in a real HR setting.
+`Age`, `Gender`, and `MaritalStatus` are included in the primary model because they are part of the benchmark schema and the primary specification uses the available modeling features rather than excluding these columns a priori. A controlled **sensitive-attribute ablation** removes all three from model inputs while keeping the same train/test split, model specification, and threshold. The original values are retained only for subgroup grouping in the evaluation. These attributes must not be used to make or justify employment decisions in a real HR setting.
 
-## Sensitive-attribute ablation
-
-A controlled ablation removes **Age, Gender, and MaritalStatus** from model inputs and refits the same Logistic Regression configuration on the same training partition. The held-out test partition and 0.50 threshold are unchanged. The original attribute values are retained only for subgroup grouping in the evaluation.
-
-The ablation script reports held-out Average Precision, recall, precision, ROC-AUC, flag rate, and subgroup results for Gender, MaritalStatus, and the predefined age bands:
-
-```bash
-python src/sensitive_attribute_ablation.py
-python src/rule_baseline.py
-python src/segment_statistics.py
-```
-
-### Ablation results
+### Sensitive-attribute ablation
 
 | Metric | Full model | Without Age/Gender/MaritalStatus |
 |---|---:|---:|
@@ -213,9 +208,28 @@ python src/segment_statistics.py
 | Flag rate | **29.25%** | **27.89%** |
 | False positives | 56 | 52 |
 
-Removing the three attributes reduced Average Precision by 0.0179 and ROC-AUC by 0.0231, while recall remained unchanged at 63.83% at the fixed 0.50 threshold. Gender recall was also unchanged (Female 68.75%; Male 61.29%). Age-group recall varied after exclusion: 18–30 decreased from 77.78% to 72.22%, 31–36 from 72.73% to 63.64%, 37–43 increased from 71.43% to 85.71%, and 44+ increased from 27.27% to 36.36%. These subgroup counts are limited, so the differences are diagnostic rather than evidence of production-level fairness.
+Removing the three attributes reduced Average Precision by 0.0179 and ROC-AUC by 0.0231, while recall remained unchanged at 63.83% at the fixed 0.50 threshold. Gender recall was also unchanged (Female 68.75%; Male 61.29%). Age-group recall varied after exclusion: 18–30 decreased from 77.78% to 72.22%, 31–36 from 72.73% to 63.64%, 37–43 increased from 71.43% to 85.71%, and 44+ increased from 27.27% to 36.36%. The 44+ change is only **3/11 to 4/11 attrition cases**, so it is a one-case difference rather than an improvement to celebrate. These subgroup counts are limited and diagnostic only; they do not establish production-level fairness.
 
-The detailed methodology and interpretation are documented in [docs/sensitive_attribute_ablation.md](docs/sensitive_attribute_ablation.md), with machine-generated results in [reports/sensitive_attribute_ablation.csv](reports/sensitive_attribute_ablation.csv) and [reports/sensitive_attribute_ablation_subgroups.csv](reports/sensitive_attribute_ablation_subgroups.csv).
+For a real HR context, the **ablated model would be the preferred specification** because removing Age, Gender, and MaritalStatus costs relatively little predictive performance while reducing direct use of sensitive attributes. However, this does not eliminate proxy concerns: variables such as `YearsAtCompany` and `TotalWorkingYears` remain in the model and can still encode correlated information.
+
+The detailed methodology and generated results are documented in [docs/sensitive_attribute_ablation.md](docs/sensitive_attribute_ablation.md), [reports/sensitive_attribute_ablation.csv](reports/sensitive_attribute_ablation.csv), and [reports/sensitive_attribute_ablation_subgroups.csv](reports/sensitive_attribute_ablation_subgroups.csv).
+
+### Subgroup diagnostics
+
+The frozen model was evaluated descriptively across gender and age groups at the same 0.50 threshold. The subgroup script computes percentile-bootstrap 95% intervals for observed attrition rate and recall using 2,000 resamples per subgroup.
+
+| Group | Rows | Attrition cases | Precision | Recall | False-positive rate |
+|---|---:|---:|---:|---:|---:|
+| Female | 116 | 16 | 0.324 | 0.688 | 0.230 |
+| Male | 178 | 31 | 0.365 | 0.613 | 0.224 |
+| Age 18–30 | 77 | 18 | 0.438 | 0.778 | 0.305 |
+| Age 31–36 | 84 | 11 | 0.258 | 0.727 | 0.315 |
+| Age 37–43 | 72 | 7 | 0.357 | 0.714 | 0.138 |
+| Age 44+ | 61 | 11 | 0.333 | 0.273 | 0.120 |
+
+The largest concern is the 44+ subgroup: the model recalls **3 of 11 attrition cases (27.27%)**. The subgroup bootstrap interval should be read alongside this point estimate because the numerator is small. The exact interval is generated by `src/subgroup_evaluation.py` and stored in the current CSV artifact when that script is run.
+
+This small, single-split diagnostic does not establish fairness or discrimination; uncertainty and a predefined fairness framework would be needed for a formal assessment. See [subgroup evaluation](docs/subgroup_evaluation.md) and [CSV results](reports/subgroup_evaluation.csv).
 
 ## Subgroup diagnostics
 
@@ -238,7 +252,7 @@ Performance is not uniform, particularly across age bands. The 44+ subgroup has 
 - Observational associations do not demonstrate causation.
 - A single held-out split has limited sample size, especially for subgroup analysis.
 - False positives are substantial at the fixed threshold.
-- The model has not been calibrated or validated for production use.
+- Calibration was assessed on the held-out test data (see [calibration analysis](docs/calibration.md)); no recalibration was applied. The Brier score was **0.1561** on 294 test rows. This is a diagnostic result, not a production-grade calibration guarantee.
 - Organization-specific validation, privacy and access controls, fairness assessment, monitoring, governance, and human oversight would be prerequisites for any real application.
 
 The model must not be the sole basis for hiring, termination, promotion, compensation, disciplinary, or other employment decisions.
@@ -263,7 +277,8 @@ Run the complete analysis pipeline:
 
 ```bash
 python src/run_all.py
-```
+
+`run_all.py` also executes the rule baseline, segment statistics, and calibration stages above, so the complete pipeline regenerates those artifacts.```
 
 Or run the individual analysis stages:
 
@@ -302,11 +317,16 @@ employee-attrition-analysis/
 │   ├── subgroup_evaluation.md
 │   ├── threshold_evaluation.md
 │   └── sensitive_attribute_ablation.md
+├── .github/
+│   └── workflows/
+│       └── ci.yml
 ├── reports/
 │   ├── figures/
+│   │   └── calibration_curve.png
 │   ├── baseline_cv_results.csv
 │   ├── categorical_attrition_rates.csv
 │   ├── column_validation.txt
+│   ├── calibration_metrics.csv
 │   ├── data_inspection.txt
 │   ├── eda_summary.txt
 │   ├── final_test_confusion_matrix.csv
