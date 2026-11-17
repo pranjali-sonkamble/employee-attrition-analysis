@@ -18,6 +18,7 @@ STAGES = [
     "src/sensitive_attribute_ablation.py",
     "src/rule_baseline.py",
     "src/segment_statistics.py",
+    "src/calibration.py",
 ]
 
 
