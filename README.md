@@ -85,11 +85,9 @@ These are descriptive or predictive results from a fictional benchmark dataset. 
 
 The confusion matrix makes the operational trade-off explicit: the model catches 30 of 47 attrition cases, but 56 of the 86 flagged records are false positives.
 
-### Model interpretation
+### Coefficient plot
 
 ![Model coefficients](reports/figures/model_coefficients.png)
-
-The coefficient analysis is interpreted as conditional model association, not causation. Numeric features were standardized before modeling. One-hot encoding uses `drop=None`, so no category is explicitly removed as a reference level; categorical coefficients therefore require care and should not be described as effects relative to a manually chosen reference category.
 
 ## Exploratory analysis
 
@@ -289,8 +287,7 @@ employee-attrition-analysis/
 ├── tests/
 │   └── test_data_pipeline.py
 ├── .gitignore
-├── requirements-lock.txt
-├── requirements.txt
 ├── LICENSE
-└── src/
+├── requirements-lock.txt
+└── requirements.txt
 ```
