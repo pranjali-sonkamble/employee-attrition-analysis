@@ -169,7 +169,7 @@ See [model interpretation](docs/model_interpretation.md) and [coefficient output
 
 ## Protected attributes
 
-`Age`, `Gender`, and `MaritalStatus` remain model features because they are part of the benchmark schema and the primary model uses the available modeling features rather than excluding these columns a priori. They are also examined in subgroup diagnostics, but **the model does not need these attributes as inputs to perform subgroup evaluation**. This project has not run a feature-exclusion ablation, so it makes no claim about whether removing them would change predictive performance or subgroup behavior. They must not be used to make or justify employment decisions in a real HR setting.
+`Age`, `Gender`, and `MaritalStatus` remain model features because they are part of the benchmark schema and the primary model uses the available modeling features rather than excluding these columns a priori. They are also examined in subgroup diagnostics; **subgroup evaluation needs the attribute values for grouping, not as model inputs**. This project has not run a feature-exclusion ablation, so it makes no claim about whether removing them would change predictive performance or subgroup behavior. They must not be used to make or justify employment decisions in a real HR setting.
 
 ## Subgroup diagnostics
 
@@ -283,6 +283,7 @@ employee-attrition-analysis/
 │   ├── subgroup_evaluation.py
 │   ├── test_uncertainty.py
 │   ├── train_models.py
+│   ├── run_all.py
 │   └── validate_columns.py
 ├── tests/
 │   └── test_data_pipeline.py
