@@ -26,10 +26,10 @@ For a coefficient `β`, the corresponding odds ratio is:
 
 - Positive coefficient → higher modelled odds of attrition.
 - Negative coefficient → lower modelled odds of attrition.
-- Odds ratio greater than 1 → higher odds relative to the relevant reference or baseline.
-- Odds ratio less than 1 → lower odds relative to the relevant reference or baseline.
+- Odds ratio greater than 1 → a positive contribution to the modelled log-odds when that transformed feature is active.
+- Odds ratio less than 1 → a negative contribution to the modelled log-odds when that transformed feature is active.
 
-For one-hot encoded categorical variables, the coefficient is interpreted relative to the category omitted as the reference level.
+The categorical encoder uses `drop=None`, so **all observed categories are retained**; no category is omitted as a reference level. Therefore, individual categorical coefficients should not be described as simple category-versus-reference effects. They are conditional coefficients in the regularized design matrix and should be interpreted jointly with the intercept and other encoded features.
 
 **Important:** Numeric variables were standardized during preprocessing. Therefore, an odds ratio for a numeric feature represents the change in modelled odds associated with a **one-standard-deviation increase in the original variable**, not necessarily a one-unit increase in the original measurement.
 
@@ -54,11 +54,11 @@ These coefficients should be interpreted as model associations, not causal effec
 
 ### Interpretation
 
-The largest positive coefficient belongs to the transformed `JobRole_Laboratory Technician` feature. Its coefficient is approximately 1.19, corresponding to an odds ratio of approximately 3.30 relative to the reference job-role category, conditional on the other variables in the model.
+The largest positive coefficient belongs to the transformed `JobRole_Laboratory Technician` feature. Its coefficient is approximately 1.19, corresponding to an odds ratio of approximately 3.30 for that transformed feature when active, conditional on the other variables in the model.
 
-`JobRole_Sales Representative` is also strongly positive, with an odds ratio of approximately 3.07 relative to the reference job-role category.
+`JobRole_Sales Representative` is also strongly positive, with an odds ratio of approximately 3.07 for that transformed feature when active.
 
-`BusinessTravel_Travel Frequently` and `OverTime_Yes` are also among the strongest positive associations. The `OverTime_Yes` coefficient corresponds to approximately 2.14 times the modelled odds relative to the reference category, holding the other model features constant.
+`BusinessTravel_Travel Frequently` and `OverTime_Yes` are also among the strongest positive associations. The `OverTime_Yes` coefficient corresponds to approximately 2.14 times the modelled odds contribution associated with that transformed feature when active, holding the other model features constant.
 
 The positive coefficient for `JobLevel` indicates a positive modelled association after accounting for the other included features. Because `JobLevel` is a standardized numeric feature and is correlated with several experience and compensation variables, its odds ratio should not be interpreted as the effect of moving up exactly one job level.
 
@@ -81,7 +81,7 @@ Similarly, the positive coefficients for `YearsSinceLastPromotion` and `NumCompa
 
 ### Interpretation
 
-`JobRole_Research Director` has the most negative coefficient, with an odds ratio of approximately 0.23 relative to the reference job-role category.
+`JobRole_Research Director` has the most negative coefficient, with an odds ratio of approximately 0.23 for that transformed feature when active.
 
 `BusinessTravel_Non-Travel` and `OverTime_No` are also strongly negative. The `OverTime_No` coefficient is the expected counterpart to the positive association for `OverTime_Yes`, although the two coefficients should not be interpreted independently of the categorical encoding and other model features.
 
