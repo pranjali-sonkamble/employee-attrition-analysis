@@ -55,13 +55,13 @@ The raw CSV is not committed. See [data/README.md](data/README.md) for download 
 
 ## Key business findings
 
-> **The business story comes before the model.** The descriptive analysis identifies where observed attrition is concentrated; the model then evaluates whether those patterns can support a cautious risk-screening workflow.
+> **Observed attrition is concentrated in a few identifiable segments.** Overtime workers show 30.53% attrition versus 10.44% without overtime, while Sales Representatives show 39.76%. These descriptive patterns motivate the modeling work but do not establish causes.
 
 | Finding | Observed result |
 |---|---:|
 | Overtime attrition | **30.53%** vs **10.44%** without overtime |
 | Sales Representative attrition | **39.76%** |
-| Early-tenure attrition | **25.96%** |
+| Attrition among employees with ≤3 years at company | **25.96%** |
 | Single-employee attrition | **25.53%** |
 | Final test recall | **63.83%** |
 | Final test precision | **34.88%** |
@@ -98,6 +98,7 @@ The EDA examines attrition rates across work patterns, job roles, demographics, 
 - Attrition was 30.53% among records with overtime and 10.44% among those without overtime.
 - Sales Representatives had an observed rate of 39.76% (83 records).
 - Single employees had an observed rate of 25.53%.
+- Employees with `YearsAtCompany` ≤ 3 years had an observed attrition rate of 25.96%; this is the definition used for the project’s early-tenure finding.
 - The age-band pattern was non-monotonic: 25.91% up to age 30, 16.02% at 31–36, 8.92% at 37–43, and 12.10% at 44–60.
 
 These are descriptive associations, not causal effects. Group sizes differ and smaller groups require particular caution.
@@ -122,7 +123,7 @@ Candidate models were compared using repeated stratified five-fold cross-validat
 | Random Forest | 0.5460 ± 0.0091 | 0.8026 ± 0.0001 |
 | Dummy baseline | 0.1616 ± 0.0000 | 0.5000 ± 0.0000 |
 
-Threshold trade-offs were analyzed separately using training-set out-of-fold probabilities. The final test threshold was fixed at **0.50**; it was not selected from the held-out test labels.
+Threshold trade-offs were analyzed separately using training-set out-of-fold probabilities. The final test threshold was fixed at **0.50**; it was not selected from the held-out test labels. The OOF analysis showed that 0.60 raised F1 from 0.491 to 0.539 but reduced recall from 73.68% to 66.84%; because no organization-specific cost or review-capacity constraint was predefined, 0.50 was retained as the conventional reference operating point rather than optimizing an arbitrary F1 objective.
 
 ## Final held-out test results
 
@@ -170,7 +171,7 @@ See [model interpretation](docs/model_interpretation.md) and [coefficient output
 
 ## Protected attributes
 
-`Gender` and `Age` are retained in the analysis because they are available in the benchmark dataset and are useful for subgroup diagnostics and checking whether model performance differs across groups. They are not used to make or justify employment decisions. This project does **not** claim that retaining these attributes is appropriate for a real HR deployment. Removing protected attributes and comparing the resulting model has not been tested, so no claim is made that exclusion would improve or worsen model performance or fairness.
+`Age`, `Gender`, and `MaritalStatus` remain model features because they are part of the benchmark schema and the primary model uses the available modeling features rather than excluding these columns a priori. They are also examined in subgroup diagnostics, but **the model does not need these attributes as inputs to perform subgroup evaluation**. This project has not run a feature-exclusion ablation, so it makes no claim about whether removing them would change predictive performance or subgroup behavior. They must not be used to make or justify employment decisions in a real HR setting.
 
 ## Subgroup diagnostics
 
@@ -289,13 +290,7 @@ employee-attrition-analysis/
 │   └── test_data_pipeline.py
 ├── .gitignore
 ├── requirements-lock.txt
-└── requirements.txt
+├── requirements.txt
+├── LICENSE
+└── src/run_all.py
 ```
-
-## Business finding
-
-The clearest actionable pattern in this benchmark is the concentration of observed attrition among overtime workers: **30.53% versus 10.44% without overtime**. Sales Representatives also show a **39.76%** observed attrition rate, while early-tenure employees show **25.96%**. These patterns can guide workforce-analysis questions, but they are not causal findings and cannot be transferred directly to a real employer.
-
-## Key takeaway
-
-The strongest part of this project is its evaluation discipline: model comparison and threshold analysis use training-set cross-validation, the final model and threshold are fixed before held-out testing, test uncertainty is quantified, coefficients are interpreted with scaling and correlation caveats, subgroup behavior is examined, and automated tests cover core pipeline behavior.
