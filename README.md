@@ -292,5 +292,5 @@ employee-attrition-analysis/
 ├── requirements-lock.txt
 ├── requirements.txt
 ├── LICENSE
-└── src/run_all.py
+└── src/
 ```
