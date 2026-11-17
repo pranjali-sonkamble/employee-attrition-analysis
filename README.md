@@ -271,7 +271,8 @@ employee-attrition-analysis/
 │   ├── model_interpretation.md
 │   ├── project_charter.md
 │   ├── subgroup_evaluation.md
-│   └── threshold_evaluation.md
+│   ├── threshold_evaluation.md
+│   └── sensitive_attribute_ablation.md
 ├── reports/
 │   ├── figures/
 │   ├── baseline_cv_results.csv
@@ -288,8 +289,6 @@ employee-attrition-analysis/
 │   ├── preprocessing_summary.txt
 │   ├── relationship_summary.txt
 │   ├── split_summary.txt
-│   ├── sensitive_attribute_ablation.csv
-│   ├── sensitive_attribute_ablation_subgroups.csv
 │   ├── subgroup_evaluation.csv
 │   ├── test_uncertainty.csv
 │   └── threshold_evaluation.csv
