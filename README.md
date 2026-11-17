@@ -214,7 +214,13 @@ Run tests:
 pytest -q
 ```
 
-Run the main analysis stages:
+Run the complete analysis pipeline:
+
+```bash
+python src/run_all.py
+```
+
+Or run the individual analysis stages:
 
 ```bash
 python src/inspect_data.py
