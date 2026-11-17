@@ -1,0 +1,2 @@
+model,test_rows,brier_score,n_bins,strategy
+Logistic Regression,294,0.1560874697821565,10,uniform
