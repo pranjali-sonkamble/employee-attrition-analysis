@@ -114,7 +114,7 @@ The EDA examines attrition rates across work patterns, job roles, demographics, 
 - Employees with `YearsAtCompany` ≤ 3 years had an observed attrition rate of 25.96%; this is the definition used for the project’s early-tenure finding.
 - The age-band pattern was non-monotonic: 25.91% up to age 30, 16.02% at 31–36, 8.92% at 37–43, and 12.10% at 44–60.
 
-These are descriptive associations, not causal effects. Group sizes differ and smaller groups require particular caution.
+These are descriptive associations, not causal effects. The segment p-values and confidence intervals are descriptive statistics computed across the full dataset, including the held-out test rows; they were not used for model fitting or threshold selection. Group sizes differ and smaller groups require particular caution.
 
 Details: [EDA findings](docs/eda_findings.md), [EDA summary](reports/eda_summary.txt), and [relationship summary](reports/relationship_summary.txt).
 
@@ -170,7 +170,7 @@ A fixed, interpretable baseline flags an employee when **OverTime = Yes AND Year
 | Logistic Regression | **0.3488** | **0.6383** | **0.4511** | 29.25% |
 | Overtime + short-tenure rule | **0.5484** | 0.3617 | 0.4359 | **10.54%** |
 
-The Logistic Regression provides substantially higher recall and slightly higher F1 than the rule, identifying 30 versus 17 of the 47 observed attrition cases. The rule has higher precision and a much lower review/flag rate. This is evidence of a different coverage-versus-workload trade-off in the benchmark, not evidence that the model or rule is causally explanatory. Run `python src/rule_baseline.py`; the generated comparison is saved to `reports/rule_baseline_comparison.csv`.
+The Logistic Regression provides substantially higher recall and slightly higher F1 than the rule, identifying 30 versus 17 of the 47 observed attrition cases. The rule has higher precision and a much lower review/flag rate. The rule cutoffs (`OverTime = Yes` and `YearsAtCompany <= 3`) were motivated by exploratory analysis of the full 1,470-row dataset, including the held-out test rows, so this is an **illustrative, post-hoc baseline rather than a pre-registered baseline**. This is evidence of a different coverage-versus-workload trade-off in the benchmark, not evidence that the model or rule is causally explanatory. Run `python src/rule_baseline.py`; the generated comparison is saved to `reports/rule_baseline_comparison.csv`.
 
 ## Uncertainty analysis
 
@@ -183,7 +183,7 @@ A bootstrap analysis used 2,000 valid resamples of the frozen test predictions (
 | Precision | 0.349 | 0.247–0.453 |
 | Recall | 0.638 | 0.489–0.778 |
 
-The bootstrap does not refit or tune the model; it quantifies sampling uncertainty around the fixed test predictions. [Full uncertainty table](reports/test_uncertainty.csv).
+The bootstrap does not refit or tune the model; it quantifies sampling uncertainty around the fixed test predictions. The segment confidence intervals above use **Wilson 95% intervals**; subgroup recall intervals use **percentile-bootstrap 95% intervals** from 2,000 resamples per subgroup. [Full uncertainty table](reports/test_uncertainty.csv).
 
 ## Model interpretation
 
@@ -210,7 +210,7 @@ See [model interpretation](docs/model_interpretation.md) and [coefficient output
 
 Removing the three attributes reduced Average Precision by 0.0179 and ROC-AUC by 0.0231, while recall remained unchanged at 63.83% at the fixed 0.50 threshold. Gender recall was also unchanged (Female 68.75%; Male 61.29%). Age-group recall varied after exclusion: 18–30 decreased from 77.78% to 72.22%, 31–36 from 72.73% to 63.64%, 37–43 increased from 71.43% to 85.71%, and 44+ increased from 27.27% to 36.36%. The 44+ change is only **3/11 to 4/11 attrition cases**, so it is a one-case difference rather than an improvement to celebrate. These subgroup counts are limited and diagnostic only; they do not establish production-level fairness.
 
-For a real HR context, the **ablated model would be the preferred specification** because removing Age, Gender, and MaritalStatus costs relatively little predictive performance while reducing direct use of sensitive attributes. However, this does not eliminate proxy concerns: variables such as `YearsAtCompany` and `TotalWorkingYears` remain in the model and can still encode correlated information.
+For a real HR context, the **ablated model would be the preferred specification** because removing Age, Gender, and MaritalStatus causes a 0.0179 AP drop, which is within the sampling uncertainty visible in this single test split; this difference was **not formally tested**. It also reduces direct use of sensitive attributes. However, this does not eliminate proxy concerns: variables such as `YearsAtCompany` and `TotalWorkingYears` remain in the model and can still encode correlated information.
 
 The detailed methodology and generated results are documented in [docs/sensitive_attribute_ablation.md](docs/sensitive_attribute_ablation.md), [reports/sensitive_attribute_ablation.csv](reports/sensitive_attribute_ablation.csv), and [reports/sensitive_attribute_ablation_subgroups.csv](reports/sensitive_attribute_ablation_subgroups.csv).
 
@@ -237,7 +237,7 @@ This small, single-split diagnostic does not establish fairness or discriminatio
 - Observational associations do not demonstrate causation.
 - A single held-out split has limited sample size, especially for subgroup analysis.
 - False positives are substantial at the fixed threshold.
-- Calibration was assessed on the held-out test data (see [calibration analysis](docs/calibration.md)); no recalibration was applied. The Brier score was **0.1561** on 294 test rows. This is a diagnostic result, not a production-grade calibration guarantee.
+- Calibration was assessed on the held-out test data (see [calibration analysis](docs/calibration.md)); no recalibration was applied. The Brier score was **0.1561** on 294 test rows, compared with approximately **0.134** for a constant prediction equal to the observed 16.12% base rate. The `class_weight="balanced"` training setup can make the raw probabilities unsuitable as calibrated risk estimates. **The predicted probabilities are not calibrated risk estimates; the model should be used as a ranking score.** This is a diagnostic result, not a production-grade calibration guarantee.
 - Organization-specific validation, privacy and access controls, fairness assessment, monitoring, governance, and human oversight would be prerequisites for any real application.
 
 The model must not be the sole basis for hiring, termination, promotion, compensation, disciplinary, or other employment decisions.
@@ -280,6 +280,9 @@ python src/test_uncertainty.py
 python src/model_interpretation.py
 python src/subgroup_evaluation.py
 python src/sensitive_attribute_ablation.py
+python src/rule_baseline.py
+python src/segment_statistics.py
+python src/calibration.py
 ```
 
 The committed test suite currently contains 16 regression tests covering dataset loading, target/drop-column validation, feature counts, reproducible stratified splitting, preprocessing structure, missing-value safety, pipeline structure, probability output, and binary predictions. GitHub Actions runs the regression suite on pushes to `main` and pull requests using the pinned lock file on Ubuntu Linux.
@@ -308,7 +311,10 @@ employee-attrition-analysis/
 │       └── ci.yml
 ├── reports/
 │   ├── figures/
+│   │   ├── 01_attrition_distribution.png
+│   │   ├── attrition_by_jobrole.png
 │   │   ├── calibration_curve.png
+│   │   ├── final_test_confusion_matrix.png
 │   │   └── model_coefficients.png
 │   ├── baseline_cv_results.csv
 │   ├── categorical_attrition_rates.csv
