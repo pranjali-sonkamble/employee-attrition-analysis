@@ -89,7 +89,7 @@ The confusion matrix makes the operational trade-off explicit: the model catches
 
 ![Model coefficients](reports/figures/model_coefficients.png)
 
-The coefficient analysis is interpreted as conditional model association, not causation. Numeric features were standardized before modeling.
+The coefficient analysis is interpreted as conditional model association, not causation. Numeric features were standardized before modeling. One-hot encoding uses `drop=None`, so no category is explicitly removed as a reference level; categorical coefficients therefore require care and should not be described as effects relative to a manually chosen reference category.
 
 ## Exploratory analysis
 
@@ -106,7 +106,7 @@ Details: [EDA findings](docs/eda_findings.md), [EDA summary](reports/eda_summary
 
 ## Modeling and evaluation design
 
-The modeling input contains 30 features grouped into 7 categorical fields, 8 coded ordinal fields retained as numeric, and 15 other numeric fields. The reusable pipeline performs median imputation and numeric scaling, most-frequent categorical imputation, and one-hot encoding. SMOTE is disabled for the reported final model.
+The modeling input contains 30 features grouped into 7 categorical fields, 8 coded ordinal fields retained as numeric, and 15 other numeric fields. The reusable pipeline performs median imputation and numeric scaling, most-frequent categorical imputation, and one-hot encoding. The selected Logistic Regression uses `class_weight="balanced"` to account for the imbalanced target. **SMOTE is disabled** because class weighting already addresses the class imbalance without creating synthetic observations, keeping the final training pipeline simpler and directly interpretable.
 
 The data is split once using a stratified 80/20 split with random state 42:
 
@@ -115,12 +115,12 @@ The data is split once using a stratified 80/20 split with random state 42:
 
 Candidate models were compared using repeated stratified five-fold cross-validation with three repeats on the training partition. Logistic Regression was selected on mean Average Precision and ROC-AUC:
 
-| Model | Mean CV Average Precision | Mean CV ROC-AUC |
+| Model | CV Average Precision | CV ROC-AUC |
 |---|---:|---:|
-| Logistic Regression | **0.6130** | **0.8251** |
-| Hist Gradient Boosting | 0.5472 | 0.8005 |
-| Random Forest | 0.5460 | 0.8026 |
-| Dummy baseline | 0.1616 | 0.5000 |
+| Logistic Regression | **0.6130 ± 0.0065** | **0.8251 ± 0.0017** |
+| Hist Gradient Boosting | 0.5472 ± 0.0162 | 0.8005 ± 0.0098 |
+| Random Forest | 0.5460 ± 0.0091 | 0.8026 ± 0.0001 |
+| Dummy baseline | 0.1616 ± 0.0000 | 0.5000 ± 0.0000 |
 
 Threshold trade-offs were analyzed separately using training-set out-of-fold probabilities. The final test threshold was fixed at **0.50**; it was not selected from the held-out test labels.
 
@@ -164,9 +164,13 @@ The bootstrap does not refit or tune the model; it quantifies sampling uncertain
 
 The final Logistic Regression model has 51 transformed features. Coefficients were calculated from a pipeline fitted on the training partition only. Numeric features were standardized, so numeric odds ratios correspond to a one-standard-deviation increase, not a one-unit raw change.
 
-The largest positive associations included Laboratory Technician job role (coefficient 1.1943; odds ratio 3.3014), Sales Representative job role (1.1206; 3.0667), frequent business travel (0.7876; 2.1980), and overtime (0.7615; 2.1415). These are conditional model associations relative to encoded reference categories, not causal effects.
+The largest positive associations included Laboratory Technician job role (coefficient 1.1943; odds ratio 3.3014), Sales Representative job role (1.1206; 3.0667), frequent business travel (0.7876; 2.1980), and overtime (0.7615; 2.1415). These are conditional model associations, not causal effects. Because the encoder retains all categories (`drop=None`) and the regularized model includes an intercept, individual categorical coefficients should not be read as simple causal effects or as comparisons against a manually selected reference category.
 
 See [model interpretation](docs/model_interpretation.md) and [coefficient output](reports/model_interpretation.csv).
+
+## Protected attributes
+
+`Gender` and `Age` are retained in the analysis because they are available in the benchmark dataset and are useful for subgroup diagnostics and checking whether model performance differs across groups. They are not used to make or justify employment decisions. This project does **not** claim that retaining these attributes is appropriate for a real HR deployment. Removing protected attributes and comparing the resulting model has not been tested, so no claim is made that exclusion would improve or worsen model performance or fairness.
 
 ## Subgroup diagnostics
 
@@ -225,7 +229,7 @@ python src/model_interpretation.py
 python src/subgroup_evaluation.py
 ```
 
-The latest recorded local test run passed all 10 regression tests. GitHub Actions also runs the regression suite on pushes to `main` and pull requests.
+The latest recorded local test run passed all 10 regression tests. GitHub Actions runs the regression suite on pushes to `main` and pull requests using the pinned lock file on Ubuntu Linux.
 
 ## Repository structure
 
@@ -281,6 +285,10 @@ employee-attrition-analysis/
 ├── requirements-lock.txt
 └── requirements.txt
 ```
+
+## Business finding
+
+The clearest actionable pattern in this benchmark is the concentration of observed attrition among overtime workers: **30.53% versus 10.44% without overtime**. Sales Representatives also show a **39.76%** observed attrition rate, while early-tenure employees show **25.96%**. These patterns can guide workforce-analysis questions, but they are not causal findings and cannot be transferred directly to a real employer.
 
 ## Key takeaway
 
