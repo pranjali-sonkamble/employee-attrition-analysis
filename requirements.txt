@@ -6,4 +6,4 @@ seaborn
 scikit-learn
 imbalanced-learn
 jupyter
-pytest
+pytest\nscipy\n
