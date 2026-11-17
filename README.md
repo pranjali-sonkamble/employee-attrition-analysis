@@ -2,492 +2,181 @@
 
 An end-to-end analytical prototype for understanding employee attrition patterns and evaluating a machine-learning model for attrition risk prediction using the IBM HR Analytics Employee Attrition & Performance benchmark dataset.
 
-> **Project status:** Portfolio-ready analytical prototype
-> **Primary focus:** Data analysis, model evaluation, interpretation, uncertainty, subgroup diagnostics, and reproducibility
-> **Important:** This project is not a production HR decision system and should not be used as the sole basis for employment decisions.
+> **Project status:** Completed analytical portfolio prototype  
+> **Primary focus:** EDA, model comparison, leakage-aware evaluation, threshold analysis, model interpretation, uncertainty, subgroup diagnostics, and reproducibility  
+> **Important:** This is not a production HR decision system and must not be used as the sole basis for employment decisions.
 
 ---
 
-## 1. Project Overview
+## Project at a glance
 
-Employee attrition is an important workforce analytics problem because organizations need to understand where turnover risk is concentrated and which employee/workplace characteristics are associated with attrition.
-
-This project follows a complete analytical workflow:
-
-**Raw Dataset â†’ Data Validation â†’ EDA â†’ Preprocessing â†’ Model Comparison â†’ Threshold Evaluation â†’ Final Held-Out Test â†’ Uncertainty Analysis â†’ Model Interpretation â†’ Subgroup Evaluation â†’ Regression Tests**
-
-The project deliberately separates model development from final evaluation so that the held-out test set is not used to tune the model or select the final threshold.
-
----
-
-## 2. Objectives
-
-The project has four main objectives:
-
-1. **Understand the dataset**
-   - Validate schema, identifiers, data types, constant columns, and logical consistency.
-   - Explore employee demographics, job characteristics, compensation, satisfaction, tenure, and attrition.
-
-2. **Build and compare predictive models**
-   - Use reproducible preprocessing and stratified evaluation.
-   - Compare candidate models using repeated cross-validation.
-   - Select a final model before evaluating the held-out test set.
-
-3. **Evaluate prediction quality**
-   - Measure ranking performance and classification performance.
-   - Evaluate the selected threshold using out-of-fold predictions.
-   - Perform final evaluation once on the untouched test set.
-
-4. **Assess limitations and reliability**
-   - Quantify test-set uncertainty with bootstrap confidence intervals.
-   - Interpret model coefficients carefully.
-   - Check performance across descriptive subgroups.
-   - Add regression tests to protect the data/model pipeline.
-
----
-
-## 3. Dataset
-
-**Dataset:** IBM HR Analytics Employee Attrition & Performance
-
-The dataset is a fictional benchmark dataset containing employee-level HR attributes and an `Attrition` target.
-
-Local inspection:
-
-- **Rows:** 1,470
-- **Columns:** 35
-- **Target:** `Attrition`
-- **Target classes:** `Yes` / `No`
-
-The dataset source and licensing information are documented in:
-
-- `docs/data_source.md`
-- `reports/data_inspection.txt`
-
-The raw dataset is intentionally excluded from Git through `.gitignore`.
-
----
-
-## 4. Data Validation
-
-Before modeling, the dataset was inspected for structural and logical issues.
-
-Validation included:
-
-- Dataset shape and schema inspection
-- Unique employee identifier validation
-- Constant-column detection
-- Coded ordinal variable inspection
-- Numeric summary statistics
-- Logical consistency checks
-- Target validation
-- Train/test separation checks
-
-### Identifier validation
-
-`EmployeeNumber` is unique across all 1,470 records and is treated as an identifier rather than a predictive feature.
-
-### Constant columns
-
-The following columns contain no useful variation and are excluded:
-
-- `EmployeeCount`
-- `Over18`
-- `StandardHours`
-
-`EmployeeNumber` is also excluded as an identifier.
-
-The resulting modeling dataset contains **30 candidate features** before preprocessing.
-
----
-
-## 5. Exploratory Data Analysis
-
-The EDA examines relationships between attrition and employee/job characteristics including:
-
-- Age
-- Business travel
-- Department
-- Education
-- Education field
-- Job level
-- Job role
-- Monthly income
-- Overtime
-- Marital status
-- Job satisfaction
-- Environment satisfaction
-- Years at company
-- Years in current role
-- Years since last promotion
-- Years with current manager
-- Number of companies worked
-
-EDA findings and supporting artifacts are documented in:
-
-`docs/eda_findings.md`
-
-The analysis is descriptive and does not interpret observational relationships as causal effects.
-
----
-
-## 6. Preprocessing
-
-The preprocessing pipeline is implemented with reusable scikit-learn / imbalanced-learn components.
-
-### Feature groups
-
-**Categorical features**
-
-- BusinessTravel
-- Department
-- EducationField
-- Gender
-- JobRole
-- MaritalStatus
-- OverTime
-
-**Ordinal features**
-
-- Education
-- EnvironmentSatisfaction
-- JobInvolvement
-- JobSatisfaction
-- RelationshipSatisfaction
-- WorkLifeBalance
-- StockOptionLevel
-- PerformanceRating
-
-**Numeric features**
-
-- Age
-- DailyRate
-- DistanceFromHome
-- HourlyRate
-- JobLevel
-- MonthlyIncome
-- MonthlyRate
-- NumCompaniesWorked
-- PercentSalaryHike
-- TotalWorkingYears
-- TrainingTimesLastYear
-- YearsAtCompany
-- YearsInCurrentRole
-- YearsSinceLastPromotion
-- YearsWithCurrManager
-
-### Pipeline behavior
-
-- Numeric missing values â†’ median imputation
-- Categorical missing values â†’ most-frequent imputation
-- Categorical variables â†’ one-hot encoding
-- Numeric variables â†’ scaling where required
-- Unknown categorical levels â†’ safely ignored during transformation
-- Optional SMOTE support is available in the modeling pipeline
-
-The preprocessing logic is implemented in:
-
-`src/preprocessing.py`
-
----
-
-## 7. Train/Test Design
-
-The dataset is split using:
-
-- **Test size:** 20%
-- **Stratification:** Yes
-- **Random state:** 42
-
-This produces:
-
-- **Training rows:** 1,176
-- **Held-out test rows:** 294
-
-The test set is reserved for final evaluation.
-
-No model tuning or threshold selection is performed using the final test labels.
-
----
-
-## 8. Model Comparison
-
-Candidate models are evaluated using **repeated stratified 5-fold cross-validation with 3 repeats**.
-
-The model comparison stage is performed before the final held-out test evaluation.
-
-The selected final model is:
-
-### Logistic Regression
-
-Repeated-CV performance of the selected model:
-
-| Metric | Mean CV Score |
+| Item | Result |
 |---|---:|
-| Average Precision | **0.6130** |
-| ROC-AUC | **0.8251** |
+| Dataset | IBM HR Analytics Employee Attrition & Performance |
+| Dataset shape | 1,470 rows × 35 columns |
+| Modeling features | 30 |
+| Training / test split | 1,176 / 294 |
+| Selected model | Logistic Regression |
+| Threshold used for final test | 0.50 |
+| Test ROC-AUC | **0.8032** |
+| Test Average Precision | **0.5612** |
+| Test precision / recall | **0.3488 / 0.6383** |
+| Bootstrap resamples | 2,000 |
+| Regression tests | 10 passed (local run) |
 
-The model comparison artifacts are stored in the `reports/` directory.
+The source dataset is a **fictional benchmark**. These findings are not claims about IBM's actual workforce or any real employer.
 
----
+## Project overview
 
-## 9. Threshold Evaluation
+Employee attrition is a workforce analytics problem. This project explores which employee and job attributes are associated with the observed target and evaluates whether a classification model can rank records by predicted attrition risk.
 
-Because attrition prediction is an imbalanced binary classification problem, threshold choice affects the precision/recall trade-off.
+The workflow deliberately separates development from final testing:
 
-The threshold evaluation uses **out-of-fold predictions** rather than the final test set.
+**Data validation → EDA → preprocessing → repeated cross-validation → OOF threshold analysis → fixed model and threshold → held-out test evaluation → bootstrap uncertainty → model interpretation → subgroup diagnostics → regression tests**
 
-The final evaluation threshold was fixed at:
+The held-out test set was not used for model comparison or threshold selection.
 
-**0.50**
+## Dataset and data quality
 
-The threshold is therefore treated as a predetermined evaluation setting for the final test rather than something optimized on the test data.
+**Dataset:** [IBM HR Analytics Employee Attrition & Performance (Kaggle)](https://www.kaggle.com/datasets/pavansubhasht/ibm-hr-analytics-attrition-dataset)
 
-Detailed threshold analysis:
+Local inspection records 1,470 rows and 35 columns, with no missing values or duplicate rows. The target distribution is:
 
-`docs/threshold_evaluation.md`
+| Attrition | Records | Share |
+|---|---:|---:|
+| No | 1,233 | 83.88% |
+| Yes | 237 | 16.12% |
 
----
+`EmployeeNumber` is unique and treated as an identifier. `EmployeeCount`, `Over18`, and `StandardHours` are constant. Those four fields and the target are excluded from the 30 model input features.
 
-## 10. Final Held-Out Test Evaluation
+The raw CSV is not committed. See [data/README.md](data/README.md) for download and placement instructions, and [docs/data_source.md](docs/data_source.md) for provenance and redistribution notes.
 
-The final Logistic Regression model was evaluated once on the untouched 294-row test set at the fixed threshold of 0.50.
+## Exploratory analysis
 
-### Test-set results
+The EDA examines attrition rates across work patterns, job roles, demographics, compensation, satisfaction, and tenure. A few descriptive findings from the local dataset:
 
-| Metric | Result |
+- Attrition was 30.53% among records with overtime and 10.44% among those without overtime.
+- Sales Representatives had an observed rate of 39.76% (83 records).
+- Single employees had an observed rate of 25.53%.
+- The age-band pattern was non-monotonic: 25.91% up to age 30, 16.02% at 31–36, 8.92% at 37–43, and 12.10% at 44–60.
+
+These are descriptive associations, not causal effects. Group sizes differ and smaller groups require particular caution.
+
+Details: [EDA findings](docs/eda_findings.md), [EDA summary](reports/eda_summary.txt), and [relationship summary](reports/relationship_summary.txt).
+
+## Modeling and evaluation design
+
+The modeling input contains 30 features grouped into 7 categorical fields, 8 coded ordinal fields retained as numeric, and 15 other numeric fields. The reusable pipeline performs median imputation and numeric scaling, most-frequent categorical imputation, and one-hot encoding. SMOTE is disabled for the reported final model.
+
+The data is split once using a stratified 80/20 split with random state 42:
+
+- Training: 1,176 rows (190 attrition cases)
+- Held-out test: 294 rows (47 attrition cases)
+
+Candidate models were compared using repeated stratified five-fold cross-validation with three repeats on the training partition. Logistic Regression was selected on mean Average Precision and ROC-AUC:
+
+| Model | Mean CV Average Precision | Mean CV ROC-AUC |
+|---|---:|---:|
+| Logistic Regression | **0.6130** | **0.8251** |
+| Hist Gradient Boosting | 0.5472 | 0.8005 |
+| Random Forest | 0.5460 | 0.8026 |
+| Dummy baseline | 0.1616 | 0.5000 |
+
+Threshold trade-offs were analyzed separately using training-set out-of-fold probabilities. The final test threshold was fixed at **0.50**; it was not selected from the held-out test labels.
+
+## Final held-out test results
+
+The Logistic Regression model was evaluated on the untouched 294-row test partition at threshold 0.50.
+
+| Metric | Test result |
 |---|---:|
 | Average Precision | **0.5612** |
 | ROC-AUC | **0.8032** |
 | Precision | **0.3488** |
 | Recall | **0.6383** |
-| F1-score | **0.4511** |
+| F1 score | **0.4511** |
 
-### Confusion matrix
+Confusion matrix:
 
 |  | Predicted No | Predicted Yes |
 |---|---:|---:|
 | **Actual No** | 191 | 56 |
 | **Actual Yes** | 17 | 30 |
 
-Therefore:
+The model identified 30 of 47 attrition cases and missed 17. It flagged 86 records, of which 56 were false positives. This supports interpreting the model as a screening or ranking prototype, not a definitive predictor of an individual's intent.
 
-- **True Negatives:** 191
-- **False Positives:** 56
-- **False Negatives:** 17
-- **True Positives:** 30
+Full detail: [final evaluation](docs/final_evaluation.md), [test metrics](reports/final_test_metrics.csv), and [confusion matrix](reports/final_test_confusion_matrix.csv).
 
-The model identifies approximately 64% of the attrition cases in this held-out test sample, while generating a substantial number of false positives.
+## Uncertainty analysis
 
-This trade-off is important: the model is better interpreted as a **risk-ranking / screening prototype** than as a definitive predictor of which employees will leave.
+A bootstrap analysis used 2,000 valid resamples of the frozen test predictions (seed 42). Selected 95% percentile intervals:
 
-Detailed results:
-
-`docs/final_evaluation.md`
-
----
-
-## 11. Test-Set Uncertainty
-
-Point estimates alone can hide uncertainty, especially with a relatively small number of attrition cases.
-
-A bootstrap analysis was therefore performed on the frozen 294-row test set.
-
-Configuration:
-
-- **Bootstrap resamples:** 2,000 valid resamples
-- **Random seed:** 42
-- **Model:** frozen
-- **Threshold:** frozen
-- **Test rows:** 294
-
-### 95% bootstrap intervals
-
-| Metric | Estimate | 95% CI |
+| Metric | Estimate | 95% interval |
 |---|---:|---:|
-| Average Precision | 0.561 | 0.425â€“0.689 |
-| ROC-AUC | 0.803 | 0.727â€“0.873 |
-| Precision | 0.349 | 0.247â€“0.453 |
-| Recall | 0.638 | 0.489â€“0.778 |
-| Recall @ Top 10% | 0.362 | 0.260â€“0.475 |
-| Recall @ Top 20% | 0.532 | 0.420â€“0.676 |
-| Recall @ Top 30% | 0.638 | 0.524â€“0.810 |
+| Average Precision | 0.561 | 0.425–0.689 |
+| ROC-AUC | 0.803 | 0.727–0.873 |
+| Precision | 0.349 | 0.247–0.453 |
+| Recall | 0.638 | 0.489–0.778 |
 
-The bootstrap analysis does **not** modify the model or threshold. It quantifies uncertainty around the already-frozen test evaluation.
+The bootstrap does not refit or tune the model; it quantifies sampling uncertainty around the fixed test predictions. [Full uncertainty table](reports/test_uncertainty.csv).
 
-Detailed results:
+## Model interpretation
 
-`reports/test_uncertainty.csv`
+The final Logistic Regression model has 51 transformed features. Coefficients were calculated from a pipeline fitted on the training partition only. Numeric features were standardized, so numeric odds ratios correspond to a one-standard-deviation increase, not a one-unit raw change.
 
----
+The largest positive associations included Laboratory Technician job role (coefficient 1.1943; odds ratio 3.3014), Sales Representative job role (1.1206; 3.0667), frequent business travel (0.7876; 2.1980), and overtime (0.7615; 2.1415). These are conditional model associations relative to encoded reference categories, not causal effects.
 
-## 12. Model Interpretation
+See [model interpretation](docs/model_interpretation.md) and [coefficient output](reports/model_interpretation.csv).
 
-The final Logistic Regression model uses **51 transformed features** after preprocessing.
+## Subgroup diagnostics
 
-Because the model is linear in the transformed feature space, coefficients can be examined to understand which features are associated with higher or lower predicted log-odds, conditional on the other features in the model.
+The frozen model was evaluated descriptively across gender and age groups at the same 0.50 threshold.
 
-### Strongest positive coefficients
+| Group | Rows | Attrition cases | Precision | Recall | False-positive rate |
+|---|---:|---:|---:|---:|---:|
+| Female | 116 | 16 | 0.324 | 0.688 | 0.230 |
+| Male | 178 | 31 | 0.365 | 0.613 | 0.224 |
+| Age 18–30 | 77 | 18 | 0.438 | 0.778 | 0.305 |
+| Age 31–36 | 84 | 11 | 0.258 | 0.727 | 0.315 |
+| Age 37–43 | 72 | 7 | 0.357 | 0.714 | 0.138 |
+| Age 44+ | 61 | 11 | 0.333 | 0.273 | 0.120 |
 
-| Feature | Coefficient | Odds Ratio |
-|---|---:|---:|
-| JobRole â€” Laboratory Technician | 1.1943 | 3.301 |
-| JobRole â€” Sales Representative | 1.1206 | 3.067 |
-| BusinessTravel â€” Travel Frequently | 0.7876 | 2.198 |
-| OverTime â€” Yes | 0.7615 | 2.142 |
-| EducationField â€” Human Resources | 0.7211 | 2.057 |
+Performance is not uniform, particularly across age bands. This small, single-split diagnostic does not establish fairness or discrimination; uncertainty and a predefined fairness framework would be needed for a formal assessment. See [subgroup evaluation](docs/subgroup_evaluation.md) and [CSV results](reports/subgroup_evaluation.csv).
 
-### Strongest negative coefficients
+## Responsible use and limitations
 
-| Feature | Coefficient | Odds Ratio |
-|---|---:|---:|
-| JobRole â€” Research Director | -1.4657 | 0.231 |
-| BusinessTravel â€” Non-Travel | -0.9939 | 0.370 |
-| OverTime â€” No | -0.8928 | 0.410 |
-| EducationField â€” Other | -0.7981 | 0.450 |
-| JobRole â€” Healthcare Representative | -0.6472 | 0.524 |
+- The dataset is fictional and does not establish real-world employee behavior.
+- Observational associations do not demonstrate causation.
+- A single held-out split has limited sample size, especially for subgroup analysis.
+- False positives are substantial at the fixed threshold.
+- The model has not been calibrated or validated for production use.
+- Organization-specific validation, privacy and access controls, fairness assessment, monitoring, governance, and human oversight would be prerequisites for any real application.
 
-### Interpretation caution
+The model must not be the sole basis for hiring, termination, promotion, compensation, disciplinary, or other employment decisions.
 
-These coefficients represent **conditional statistical associations**, not causal effects.
+## Reproducibility
 
-For categorical variables, coefficients are interpreted relative to the corresponding reference category created by one-hot encoding.
+The project was developed with Python 3.10. Package versions are pinned in `requirements-lock.txt`; the smaller `requirements.txt` lists the main direct dependencies. Place the raw CSV at the path documented in [data/README.md](data/README.md), activate the virtual environment, and run commands from the repository root.
 
-Correlated predictors can also affect coefficient magnitude and stability. Therefore, the coefficients should not be interpreted as evidence that changing a particular employee characteristic would cause attrition to increase or decrease.
+Install dependencies:
 
-Detailed interpretation:
-
-`docs/model_interpretation.md`
-
----
-
-## 13. Subgroup Evaluation
-
-The frozen model was evaluated descriptively across selected gender and age subgroups.
-
-### Gender
-
-| Group | Rows | Attrition Cases | Precision | Recall | FPR | Flag Rate |
-|---|---:|---:|---:|---:|---:|---:|
-| Female | 116 | 16 | 0.324 | 0.688 | 0.230 | 0.293 |
-| Male | 178 | 31 | 0.365 | 0.613 | 0.224 | 0.292 |
-
-### Age groups
-
-| Age Group | Rows | Attrition Cases | Precision | Recall | FPR | Flag Rate |
-|---|---:|---:|---:|---:|---:|---:|
-| 18â€“30 | 77 | 18 | 0.438 | 0.778 | 0.305 | 0.416 |
-| 31â€“36 | 84 | 11 | 0.258 | 0.727 | 0.315 | 0.369 |
-| 37â€“43 | 72 | 7 | 0.357 | 0.714 | 0.138 | 0.194 |
-| 44+ | 61 | 11 | 0.333 | 0.273 | 0.120 | 0.148 |
-
-The subgroup results show that model performance is **not uniform across all groups**, particularly across age bands.
-
-However, these descriptive results do **not by themselves establish fairness, discrimination, or causal bias**. Some groups contain relatively few attrition cases, so estimates can be unstable.
-
-Subgroup methodology and limitations:
-
-`docs/subgroup_evaluation.md`
-
----
-
-## 14. Responsible Use
-
-This project is an analytical prototype using a fictional benchmark dataset.
-
-It should **not** be used as the sole basis for:
-
-- Hiring decisions
-- Termination decisions
-- Promotion decisions
-- Compensation decisions
-- Employee disciplinary action
-- Individual HR interventions
-
-A real deployment would require additional work, including:
-
-- Organization-specific validation
-- Privacy and access controls
-- Fairness and impact assessment
-- Monitoring for data drift and performance degradation
-- Calibration analysis
-- Uncertainty-aware decision policies
-- Human oversight
-- Appropriate HR/legal governance
-- Documentation of permissible use cases
-
-The model should be treated as a decision-support or analytical tool rather than an automated decision-maker.
-
----
-
-## 15. Regression Tests
-
-The project includes automated regression tests covering the data and modeling pipeline.
-
-Current test suite:
-
-**10 tests passed**
-
-```text
-pytest -q
-..........                                                               [100%]
-10 passed in 2.42s
+```bash
+pip install -r requirements-lock.txt
 ```
 
-The tests cover:
-
-- Expected dataset shape
-- Target encoding
-- Dropped identifier/constant columns
-- Expected feature count
-- Reproducible train/test splitting
-- Split size and stratification
-- Preprocessor structure
-- Missing-value handling after transformation
-- Model pipeline structure
-- Model fitting and probability generation
-- Binary prediction behavior
-
-Tests are located in:
-
-`tests/test_data_pipeline.py`
-
----
-
-## 16. Reproducibility
-
-The project uses deterministic settings where appropriate, including:
-
-- Random state: **42**
-- Stratified train/test split
-- Repeated stratified cross-validation
-- Fixed evaluation threshold
-- Bootstrap seed: **42**
-
-### Environment
-
-The project was developed with:
-
-- Python 3.10
-- pandas
-- NumPy
-- scikit-learn
-- imbalanced-learn
-- matplotlib
-- pytest
-
-Dependencies are recorded in the project requirements files.
-
-### Run tests
+Run tests:
 
 ```bash
 pytest -q
 ```
 
-### Run key analysis stages
+Run the main analysis stages:
 
 ```bash
-python src/data_prep.py
+python src/inspect_data.py
+python src/validate_columns.py
+python src/explore_data.py
+python src/explore_relationships.py
 python src/compare_models.py
 python src/evaluate_thresholds.py
 python src/final_evaluation.py
@@ -496,120 +185,63 @@ python src/model_interpretation.py
 python src/subgroup_evaluation.py
 ```
 
-Run the scripts from the project root with the virtual environment activated.
+The README reports the latest recorded local test run (10 passed); GitHub Actions/CI status is not claimed.
 
----
-
-## 17. Project Structure
+## Repository structure
 
 ```text
 employee-attrition-analysis/
-â”‚
-â”œâ”€â”€ data/
-â”‚   â”œâ”€â”€ raw/
-â”‚   â””â”€â”€ processed/
-â”‚
-â”œâ”€â”€ docs/
-â”‚   â”œâ”€â”€ project_charter.md
-â”‚   â”œâ”€â”€ data_source.md
-â”‚   â”œâ”€â”€ eda_findings.md
-â”‚   â”œâ”€â”€ threshold_evaluation.md
-â”‚   â”œâ”€â”€ final_evaluation.md
-â”‚   â”œâ”€â”€ model_interpretation.md
-â”‚   â””â”€â”€ subgroup_evaluation.md
-â”‚
-â”œâ”€â”€ models/
-â”‚
-â”œâ”€â”€ notebooks/
-â”‚
-â”œâ”€â”€ reports/
-â”‚   â”œâ”€â”€ figures/
-â”‚   â”œâ”€â”€ data_inspection.txt
-â”‚   â”œâ”€â”€ column_validation.txt
-â”‚   â”œâ”€â”€ model_interpretation.csv
-â”‚   â”œâ”€â”€ subgroup_evaluation.csv
-â”‚   â””â”€â”€ test_uncertainty.csv
-â”‚
-â”œâ”€â”€ src/
-â”‚   â”œâ”€â”€ data_prep.py
-â”‚   â”œâ”€â”€ preprocessing.py
-â”‚   â”œâ”€â”€ model_zoo.py
-â”‚   â”œâ”€â”€ compare_models.py
-â”‚   â”œâ”€â”€ evaluate_thresholds.py
-â”‚   â”œâ”€â”€ final_evaluation.py
-â”‚   â”œâ”€â”€ test_uncertainty.py
-â”‚   â”œâ”€â”€ model_interpretation.py
-â”‚   â””â”€â”€ subgroup_evaluation.py
-â”‚
-â”œâ”€â”€ tests/
-â”‚   â””â”€â”€ test_data_pipeline.py
-â”‚
-â”œâ”€â”€ .gitignore
-â”œâ”€â”€ requirements.txt
-â”œâ”€â”€ requirements-lock.txt
-â””â”€â”€ README.md
+├── data/
+│   └── README.md
+├── docs/
+│   ├── data_source.md
+│   ├── eda_findings.md
+│   ├── final_evaluation.md
+│   ├── model_interpretation.md
+│   ├── project_charter.md
+│   ├── subgroup_evaluation.md
+│   └── threshold_evaluation.md
+├── reports/
+│   ├── figures/
+│   ├── baseline_cv_results.csv
+│   ├── categorical_attrition_rates.csv
+│   ├── column_validation.txt
+│   ├── data_inspection.txt
+│   ├── eda_summary.txt
+│   ├── final_test_confusion_matrix.csv
+│   ├── final_test_metrics.csv
+│   ├── model_comparison.csv
+│   ├── model_comparison_repeats.csv
+│   ├── model_interpretation.csv
+│   ├── numeric_attrition_rates.csv
+│   ├── preprocessing_summary.txt
+│   ├── relationship_summary.txt
+│   ├── split_summary.txt
+│   ├── subgroup_evaluation.csv
+│   ├── test_uncertainty.csv
+│   └── threshold_evaluation.csv
+├── src/
+│   ├── compare_models.py
+│   ├── data_prep.py
+│   ├── evaluate_thresholds.py
+│   ├── explore_data.py
+│   ├── explore_relationships.py
+│   ├── final_evaluation.py
+│   ├── inspect_data.py
+│   ├── model_interpretation.py
+│   ├── model_zoo.py
+│   ├── preprocessing.py
+│   ├── subgroup_evaluation.py
+│   ├── test_uncertainty.py
+│   ├── train_models.py
+│   └── validate_columns.py
+├── tests/
+│   └── test_data_pipeline.py
+├── .gitignore
+├── requirements-lock.txt
+└── requirements.txt
 ```
 
----
+## Key takeaway
 
-## 18. Key Takeaways
-
-### What the project demonstrates
-
-- End-to-end employee attrition analytics
-- Reproducible data preparation
-- Structured exploratory analysis
-- Leakage-aware train/test separation
-- Reusable preprocessing pipelines
-- Repeated cross-validation
-- Out-of-fold threshold evaluation
-- Final held-out test evaluation
-- Bootstrap uncertainty estimation
-- Interpretable Logistic Regression
-- Subgroup performance diagnostics
-- Automated regression testing
-- Responsible-use documentation
-
-### Final model snapshot
-
-| Item | Result |
-|---|---|
-| Final model | Logistic Regression |
-| Test rows | 294 |
-| Threshold | 0.50 |
-| ROC-AUC | 0.8032 |
-| Average Precision | 0.5612 |
-| Precision | 0.3488 |
-| Recall | 0.6383 |
-| F1 | 0.4511 |
-| TP / FP / TN / FN | 30 / 56 / 191 / 17 |
-| Bootstrap resamples | 2,000 |
-| Regression tests | 10 passed |
-
-The most important conclusion is not simply that the model achieves a particular score. The project demonstrates a disciplined evaluation process: model selection is separated from final testing, uncertainty is quantified, interpretation is qualified, subgroup behavior is examined, and the pipeline is protected with automated tests.
-
----
-
-## 19. Limitations
-
-The project has several important limitations:
-
-1. The dataset is fictional and may not represent real organizational workforce behavior.
-2. The sample size is modest for subgroup-level analysis.
-3. Attrition is an observational outcome, so model associations should not be interpreted causally.
-4. The final model is evaluated on a single held-out test split.
-5. Performance may change substantially on a different organization, time period, or population.
-6. The chosen threshold reflects a specific evaluation trade-off and may not match a real organization's operational costs.
-7. The model is not calibrated or validated for production HR use.
-
-These limitations are part of the project's conclusions rather than issues hidden from the evaluation.
-
----
-
-## 20. Conclusion
-
-This project provides a reproducible framework for employee attrition analysis and predictive modeling while explicitly documenting model performance, uncertainty, interpretation, subgroup behavior, and limitations.
-
-The final Logistic Regression model demonstrates useful ranking and screening performance on the benchmark test set, but its precision/recall trade-off and dataset limitations make it unsuitable for unsupervised real-world employment decisions.
-
-The project therefore emphasizes **transparent evaluation and responsible analytical use** rather than presenting attrition prediction as a definitive HR decision system.
+The strongest part of this project is its evaluation discipline: model comparison and threshold analysis use training-set cross-validation, the final model and threshold are fixed before held-out testing, test uncertainty is quantified, coefficients are interpreted with scaling and correlation caveats, subgroup behavior is examined, and automated tests cover core pipeline behavior.
