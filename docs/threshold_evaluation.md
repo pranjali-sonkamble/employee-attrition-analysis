@@ -53,7 +53,7 @@ The appropriate threshold depends on the intended workflow, review capacity, and
 
 The selected model was compared using repeated stratified five-fold CV in [reports/model_comparison.csv](../reports/model_comparison.csv). Logistic Regression was selected on the training partition before the held-out test evaluation.
 
-The final evaluation used a fixed reference threshold of **0.50** and the untouched 294-row test partition. The OOF analysis showed that 0.60 increased F1 from 0.491 to 0.539 but reduced recall from 73.68% to 66.84%. Because no organization-specific cost function or review-capacity constraint was predefined, 0.50 was retained as the conventional reference operating point rather than selecting 0.60 solely to maximize F1. The reported test metrics therefore remain associated with the fixed 0.50 reference threshold.
+The final evaluation used a fixed reference threshold of **0.50** and the untouched 294-row test partition. The OOF analysis showed that 0.60 increased F1 from 0.491 to 0.539 but reduced recall from 73.68% to 66.84%. Because no organization-specific cost function or review-capacity constraint was predefined, 0.50 was retained as the fixed reference threshold rather than selecting 0.60 solely to maximize F1. At 0.50, the final test evaluation flags 86 of 294 records, a **29.25% flag rate (about 29%)**. The reported test metrics therefore remain associated with the fixed 0.50 reference threshold.
 
 ## Limitations and safeguards
 
