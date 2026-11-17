@@ -10,13 +10,12 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 from sklearn.metrics import confusion_matrix, precision_score, recall_score
-from sklearn.linear_model import LogisticRegression
 
 from data_prep import get_split
+from model_zoo import get_models
 from preprocessing import build_model_pipeline
 
 
-RANDOM_STATE = 42
 THRESHOLD = 0.50
 
 OUTPUT_DIR = Path("reports")
@@ -99,18 +98,15 @@ def main():
 
     X_train, X_test, y_train, y_test = get_split()
 
-    pipeline = classifier = LogisticRegression(
-    C=1.0,
-    class_weight="balanced",
-    max_iter=1000,
-    random_state=42,
-)
+    # Use the canonical Logistic Regression configuration from model_zoo.py
+    # so subgroup diagnostics cannot silently drift from the evaluated model.
+    classifier, _ = get_models()["Logistic Regression"]
 
     pipeline = build_model_pipeline(
-    classifier=classifier,
-)
+        classifier=classifier,
+    )
 
-    # Refit the already-frozen model configuration on training data only.
+    # Refit the same frozen model configuration on training data only.
     pipeline.fit(X_train, y_train)
 
     probabilities = pipeline.predict_proba(X_test)[:, 1]
