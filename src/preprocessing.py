@@ -53,8 +53,22 @@ NUMERIC_FEATURES = [
 ALL_NUMERIC_FEATURES = NUMERIC_FEATURES + ORDINAL_FEATURES
 
 
-def build_preprocessor(scale_numeric=True):
-    """Build preprocessing that is fitted only on the training data."""
+def build_preprocessor(scale_numeric=True, excluded_features=None):
+    """Build preprocessing that is fitted only on the training data.
+
+    ``excluded_features`` removes named columns from the modeling design while
+    leaving the source dataframe unchanged for evaluation and subgroup analysis.
+    """
+    excluded_features = set(excluded_features or [])
+    numeric_features = [
+        feature for feature in ALL_NUMERIC_FEATURES
+        if feature not in excluded_features
+    ]
+    categorical_features = [
+        feature for feature in CATEGORICAL_FEATURES
+        if feature not in excluded_features
+    ]
+
     numeric_steps = [
         ("imputer", SimpleImputer(strategy="median")),
     ]
@@ -74,17 +88,28 @@ def build_preprocessor(scale_numeric=True):
 
     return ColumnTransformer(
         transformers=[
-            ("numeric", numeric_pipeline, ALL_NUMERIC_FEATURES),
-            ("categorical", categorical_pipeline, CATEGORICAL_FEATURES),
+            ("numeric", numeric_pipeline, numeric_features),
+            ("categorical", categorical_pipeline, categorical_features),
         ],
         remainder="drop",
     )
 
 
-def build_model_pipeline(classifier, scale_numeric=True, use_smote=False):
+def build_model_pipeline(
+    classifier,
+    scale_numeric=True,
+    use_smote=False,
+    excluded_features=None,
+):
     """Combine leakage-aware preprocessing, optional SMOTE, and a classifier."""
     steps = [
-        ("preprocessor", build_preprocessor(scale_numeric=scale_numeric)),
+        (
+            "preprocessor",
+            build_preprocessor(
+                scale_numeric=scale_numeric,
+                excluded_features=excluded_features,
+            ),
+        ),
     ]
 
     if use_smote:
