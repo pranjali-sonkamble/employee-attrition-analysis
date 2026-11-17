@@ -89,13 +89,19 @@ Possible explanations include:
 - relationships between age and other predictors,
 - and differences in how well the model separates attrition from non-attrition within each subgroup.
 
+## Bootstrap uncertainty
+
+The generated subgroup table includes percentile-bootstrap 95% intervals using 2,000 resamples per subgroup. Intervals are reported for both observed attrition rate and threshold-based recall. They quantify uncertainty around this held-out sample; they are not fairness certification and should not be interpreted as population guarantees.
+
+For the **44+** group, the model recalls **3 of 11 attrition cases (27.27%)**. The small numerator and denominator make this estimate particularly unstable, so the confidence interval should be read alongside the point estimate rather than treated as a precise group-level performance claim.
+
 ## Important Limitations
 
 This analysis has several limitations.
 
 1. **Small subgroup sample sizes:** Some subgroups contain relatively few attrition cases. For example, the 37–43 group contains only 7 attrition cases and the 44+ group contains 11.
 
-2. **No statistical significance testing:** Differences in precision, recall, and false-positive rate are descriptive and were not subjected to formal hypothesis testing or confidence-interval analysis in this phase.
+2. **Limited statistical inference:** Bootstrap intervals are now reported for attrition rate and recall. They quantify sampling uncertainty but do not establish fairness or causality.
 
 3. **Single held-out split:** Results depend on the particular test partition and may vary on another sample.
 
