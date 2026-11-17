@@ -1,112 +1,75 @@
-\# Decision-Threshold Evaluation
+# Decision-Threshold Evaluation
 
+## Objective
 
+Evaluate how the classification threshold changes precision, recall, F1 score, and the number of records flagged for potential attrition. The purpose is to understand the trade-off, not to claim that one threshold is universally optimal.
 
-\## Objective
+## Methodology
 
+- **Dataset:** IBM HR Analytics Employee Attrition benchmark.
+- **Training partition:** 1,176 employees, including 190 attrition cases.
+- **Validation:** Five-fold stratified cross-validation with out-of-fold (OOF) predicted probabilities.
+- **Models evaluated:** Logistic Regression and Random Forest.
+- **Threshold grid:** 0.10 to 0.60 in increments of 0.05.
+- **Preprocessing:** Fitted independently within each CV fold through the modeling pipeline.
+- **SMOTE:** Disabled.
+- **Held-out test partition:** Not used for threshold analysis.
 
+The figures in this document are development estimates calculated from the training partition's OOF predictions. They are not final test-set results.
 
-Evaluate how changing the classification threshold affects precision, recall, F1 score, and the number of employees flagged for potential attrition. The objective is to understand the operational trade-off rather than assume the default threshold is optimal.
+## Selected results
 
+### Logistic Regression
 
+| Threshold | Precision | Recall | F1 | Flagged training rows |
+|---:|---:|---:|---:|---:|
+| 0.10 | 20.84% | 94.21% | 0.341 | 859 |
+| 0.50 | 36.84% | 73.68% | 0.491 | 380 |
+| 0.60 | 45.20% | 66.84% | 0.539 | 281 |
 
-\## Methodology
+The highest F1 among the tested Logistic Regression thresholds was 0.539 at 0.60.
 
+### Random Forest
 
+| Threshold | Precision | Recall | F1 | Flagged training rows |
+|---:|---:|---:|---:|---:|
+| 0.20 | 35.40% | 75.26% | 0.481 | 404 |
+| 0.25 | 43.80% | 63.16% | 0.517 | 274 |
+| 0.30 | 50.25% | 52.11% | 0.512 | 197 |
 
-\- Dataset: IBM HR Analytics Employee Attrition dataset.
+The highest F1 among the tested Random Forest thresholds was 0.517 at 0.25.
 
-\- Training partition: 1,176 employees, including 190 attrition cases.
+Full results are in [reports/threshold_evaluation.csv](../reports/threshold_evaluation.csv).
 
-\- Validation approach: five-fold stratified cross-validation with out-of-fold predicted probabilities.
+## Interpretation
 
-\- Models evaluated: Logistic Regression and Random Forest.
+Lower thresholds generally increase recall and the number of records flagged. This can reduce missed attrition cases while increasing false positives and review workload.
 
-\- Thresholds evaluated: 0.10 to 0.60 in increments of 0.05.
+Higher thresholds generally improve precision and reduce the number of flagged records, while missing more attrition cases.
 
-\- Preprocessing: the existing pipeline, fitted separately within each cross-validation fold.
+The appropriate threshold depends on the intended workflow, review capacity, and the relative costs of false positives and false negatives. The benchmark results do not establish a universally optimal operating threshold.
 
-\- Resampling: SMOTE disabled.
+## Relationship to the final evaluation
 
-\- Held-out test partition: not used.
+The selected model was compared using repeated stratified five-fold CV in [reports/model_comparison.csv](../reports/model_comparison.csv). Logistic Regression was selected on the training partition before the held-out test evaluation.
 
+The final evaluation used the fixed reference threshold of **0.50** and the untouched 294-row test partition. The resulting test metrics are documented separately in [docs/final_evaluation.md](final_evaluation.md).
 
+The 0.60 threshold with the highest observed training OOF F1 was **not** substituted into the final test evaluation after inspecting the test results. The reported test metrics therefore remain associated with the pre-specified 0.50 threshold.
 
-\## Results
+## Limitations and safeguards
 
+- The threshold grid is discrete; the best tested threshold is not necessarily the global optimum.
+- OOF results are development estimates and do not replace an untouched test evaluation.
+- Cross-validation fold predictions are combined to calculate the displayed metrics.
+- The benchmark is fictional and cannot establish how a real organization's employees behave.
+- Predictions are statistical signals, not evidence of individual intent or causal explanations.
+- Model outputs must not be the sole basis for employment decisions. Any real-world use would require organization-specific validation, privacy safeguards, fairness evaluation, and human oversight.
 
+## Reproduction
 
-\### Logistic Regression
+Run from the repository root after placing the raw CSV at the location described in [data/README.md](../data/README.md):
 
-
-
-\- At threshold 0.10, recall was 94.21%, precision was 20.84%, and 859 employees were flagged.
-
-\- At threshold 0.50, recall was 73.68%, precision was 36.84%, and 380 employees were flagged.
-
-\- At threshold 0.60, recall was 66.84%, precision was 45.20%, and 281 employees were flagged.
-
-\- The highest F1 score among the tested thresholds was 0.539 at threshold 0.60.
-
-
-
-\### Random Forest
-
-
-
-\- At threshold 0.20, recall was 75.26%, precision was 35.40%, and 404 employees were flagged.
-
-\- At threshold 0.25, recall was 63.16%, precision was 43.80%, and 274 employees were flagged.
-
-\- At threshold 0.30, recall was 52.11%, precision was 50.25%, and 197 employees were flagged.
-
-\- The highest F1 score among the tested thresholds was 0.517 at threshold 0.25.
-
-
-
-\## Interpretation
-
-
-
-Lower thresholds generally increase recall and the number of employees flagged. This can reduce missed attrition cases while increasing false positives and the effort required to review cases.
-
-
-
-Higher thresholds can improve precision and reduce the number of flagged employees, but they also increase the number of missed attrition cases.
-
-
-
-The appropriate operating threshold depends on the organization's retention objectives, review capacity, and the relative costs of false positives and false negatives. These results alone do not establish a universally optimal threshold.
-
-
-
-\## Limitations and safeguards
-
-
-
-\- Threshold performance is estimated from training-set out-of-fold predictions and is not final test-set performance.
-
-\- The threshold grid is discrete; the best observed threshold is not necessarily the global optimum.
-
-\- Cross-validation fold predictions are combined to calculate the displayed metrics. These are useful development estimates, but they do not replace final evaluation on untouched data.
-
-\- Attrition associations are not proof of causation or reliable predictions of individual intent.
-
-\- Model outputs should not be used as the sole basis for employment decisions. Any proposed retention use requires privacy, fairness, and appropriate human oversight.
-
-
-
-\## Next steps
-
-
-
-1\. Define an explicit operational objective and acceptable false-positive burden before selecting a threshold.
-
-2\. Record the threshold-selection rationale without using the held-out test partition.
-
-3\. Complete model selection and document any tuning decisions.
-
-4\. Evaluate the chosen model and threshold on the untouched test partition once, during the final evaluation phase.
-
-
-
+```bash
+python src/evaluate_thresholds.py
+```
