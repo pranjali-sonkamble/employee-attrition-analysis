@@ -53,9 +53,7 @@ The appropriate threshold depends on the intended workflow, review capacity, and
 
 The selected model was compared using repeated stratified five-fold CV in [reports/model_comparison.csv](../reports/model_comparison.csv). Logistic Regression was selected on the training partition before the held-out test evaluation.
 
-The final evaluation used the fixed reference threshold of **0.50** and the untouched 294-row test partition. The resulting test metrics are documented separately in [docs/final_evaluation.md](final_evaluation.md).
-
-The 0.60 threshold with the highest observed training OOF F1 was **not** substituted into the final test evaluation after inspecting the test results. The reported test metrics therefore remain associated with the pre-specified 0.50 threshold.
+The final evaluation used a fixed reference threshold of **0.50** and the untouched 294-row test partition. The 0.50 operating point was retained as a conventional, easy-to-interpret baseline rather than selected because it maximized F1. The OOF threshold analysis exposes the precision/recall trade-off, but no organization-specific cost function or review-capacity constraint was defined, so it does not establish a universally optimal operating threshold. The reported test metrics therefore remain associated with the fixed 0.50 reference threshold.
 
 ## Limitations and safeguards
 
