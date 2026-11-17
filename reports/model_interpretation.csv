@@ -1,0 +1,52 @@
+feature,coefficient,odds_ratio,absolute_coefficient,direction
+categorical__JobRole_Research Director,-1.4656825583510935,0.23092032108023794,1.4656825583510935,Lower model log-odds of attrition
+categorical__JobRole_Laboratory Technician,1.1943325530471651,3.301353556613986,1.1943325530471651,Higher model log-odds of attrition
+categorical__JobRole_Sales Representative,1.1206165881634442,3.066744538836806,1.1206165881634442,Higher model log-odds of attrition
+categorical__BusinessTravel_Non-Travel,-0.993885021289094,0.37013590821502407,0.993885021289094,Lower model log-odds of attrition
+categorical__OverTime_No,-0.8928085103320474,0.4095040398836048,0.8928085103320474,Lower model log-odds of attrition
+categorical__EducationField_Other,-0.7981075176501455,0.450180116392388,0.7981075176501455,Lower model log-odds of attrition
+categorical__BusinessTravel_Travel_Frequently,0.7875664615769029,2.1980408954792914,0.7875664615769029,Higher model log-odds of attrition
+categorical__OverTime_Yes,0.7615220595489225,2.1415332823286977,0.7615220595489225,Higher model log-odds of attrition
+categorical__EducationField_Human Resources,0.7211292387658804,2.056754466646723,0.7211292387658804,Higher model log-odds of attrition
+categorical__JobRole_Healthcare Representative,-0.6472018534518894,0.5235085829678496,0.6472018534518894,Lower model log-odds of attrition
+numeric__TotalWorkingYears,-0.6202341455876087,0.5378184950232572,0.6202341455876087,Lower model log-odds of attrition
+numeric__JobLevel,0.6074258468489302,1.8356999388610262,0.6074258468489302,Higher model log-odds of attrition
+numeric__YearsSinceLastPromotion,0.5025309481151814,1.6528993837560373,0.5025309481151814,Higher model log-odds of attrition
+categorical__MaritalStatus_Divorced,-0.48223075689810796,0.6174045749608102,0.48223075689810796,Lower model log-odds of attrition
+categorical__JobRole_Human Resources,0.46388612205582,1.590241866653848,0.46388612205582,Higher model log-odds of attrition
+numeric__NumCompaniesWorked,0.4604957076987602,1.5848594173205912,0.4604957076987602,Higher model log-odds of attrition
+categorical__MaritalStatus_Single,0.45727739476457013,1.5797670425820702,0.45727739476457013,Higher model log-odds of attrition
+numeric__YearsWithCurrManager,-0.45467398045518315,0.6346548441069518,0.45467398045518315,Lower model log-odds of attrition
+numeric__EnvironmentSatisfaction,-0.42618471056417695,0.6529957157734726,0.42618471056417695,Lower model log-odds of attrition
+numeric__JobSatisfaction,-0.38887585115433076,0.6778184151644174,0.38887585115433076,Lower model log-odds of attrition
+categorical__JobRole_Manager,-0.38159120381505707,0.6827741116145032,0.38159120381505707,Lower model log-odds of attrition
+categorical__Department_Sales,0.35690202012314837,1.4288958599545205,0.35690202012314837,Higher model log-odds of attrition
+categorical__EducationField_Technical Degree,0.35075017277811377,1.4201324938350395,0.35075017277811377,Higher model log-odds of attrition
+numeric__DistanceFromHome,0.31835259832468077,1.3748609494398554,0.31835259832468077,Higher model log-odds of attrition
+numeric__JobInvolvement,-0.287949435649299,0.7497995044056274,0.287949435649299,Lower model log-odds of attrition
+numeric__MonthlyIncome,-0.2829674506639664,0.7535443148276664,0.2829674506639664,Lower model log-odds of attrition
+numeric__Age,-0.27435863889877693,0.7600594394945235,0.27435863889877693,Lower model log-odds of attrition
+categorical__JobRole_Manufacturing Director,-0.26413352281771957,0.7678710045113002,0.26413352281771957,Lower model log-odds of attrition
+categorical__Department_Human Resources,-0.2508733740920695,0.7781208955858617,0.2508733740920695,Lower model log-odds of attrition
+numeric__YearsAtCompany,0.2507251452552108,1.284956859301003,0.2507251452552108,Higher model log-odds of attrition
+numeric__RelationshipSatisfaction,-0.24793984812365608,0.7804068848046424,0.24793984812365608,Lower model log-odds of attrition
+categorical__Department_Research & Development,-0.23731509681420343,0.7887427185401029,0.23731509681420343,Lower model log-odds of attrition
+numeric__PercentSalaryHike,-0.2347664974328353,0.7907554715056517,0.2347664974328353,Lower model log-odds of attrition
+categorical__EducationField_Life Sciences,-0.2338259448869697,0.7914995684538182,0.2338259448869697,Lower model log-odds of attrition
+numeric__YearsInCurrentRole,-0.2311074300408474,0.7936541991521787,0.2311074300408474,Lower model log-odds of attrition
+categorical__Gender_Female,-0.22720378631910473,0.7967583972837821,0.22720378631910473,Lower model log-odds of attrition
+numeric__WorkLifeBalance,-0.22359782328580463,0.7996366649554358,0.22359782328580463,Lower model log-odds of attrition
+numeric__DailyRate,-0.22295518385597457,0.8001507081603991,0.22295518385597457,Lower model log-odds of attrition
+numeric__StockOptionLevel,-0.20283084616065328,0.8164163297028741,0.20283084616065328,Lower model log-odds of attrition
+categorical__EducationField_Medical,-0.17955529089702352,0.8356417462840786,0.17955529089702352,Lower model log-odds of attrition
+numeric__TrainingTimesLastYear,-0.16782328327943755,0.8455032360425093,0.16782328327943755,Lower model log-odds of attrition
+numeric__PerformanceRating,0.14025736216746687,1.1505698739129062,0.14025736216746687,Higher model log-odds of attrition
+categorical__MaritalStatus_Married,-0.10633308864958754,0.8991251098236561,0.10633308864958754,Lower model log-odds of attrition
+categorical__Gender_Male,0.09591733553598063,1.1006680740968067,0.09591733553598063,Higher model log-odds of attrition
+categorical__JobRole_Sales Executive,-0.08087844223598842,0.9223057980613024,0.08087844223598842,Lower model log-odds of attrition
+categorical__BusinessTravel_Travel_Rarely,0.07503210892906942,1.0779187611460235,0.07503210892906942,Higher model log-odds of attrition
+categorical__JobRole_Research Scientist,-0.07063413337780328,0.9318027452933658,0.07063413337780328,Lower model log-odds of attrition
+numeric__HourlyRate,-0.04808302241100997,0.9530546588972381,0.04808302241100997,Lower model log-odds of attrition
+numeric__MonthlyRate,0.024712682352331653,1.0250205717124432,0.024712682352331653,Higher model log-odds of attrition
+numeric__Education,0.014309320184991058,1.0144121885803643,0.014309320184991058,Higher model log-odds of attrition
+categorical__EducationField_Marketing,0.008322891107022844,1.0083576226539734,0.008322891107022844,Higher model log-odds of attrition
