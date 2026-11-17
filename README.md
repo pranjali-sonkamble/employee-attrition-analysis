@@ -69,6 +69,12 @@ The raw CSV is not committed. See [data/README.md](data/README.md) for download 
 
 These are descriptive or predictive results from a fictional benchmark dataset. They should not be interpreted as causal effects or evidence about a real employer.
 
+## Recruiter deliverables
+
+- [One-page recruiter summary](docs/recruiter_summary.md) — concise project scope, results, business findings, and responsible-AI evaluation.
+- [Excel recruiter dashboard](dashboard/Employee_Attrition_Recruiter_Dashboard.xlsx) — KPI and model/segment/subgroup views built from the same verified project outputs.
+- [Calibration analysis](docs/calibration.md) — held-out reliability analysis and reproduction instructions for the calibration plot.
+
 ## Business recommendations
 
 The following actions are **hypotheses based on observed associations in this fictional benchmark**, not causal prescriptions:
@@ -96,7 +102,8 @@ The confusion matrix makes the operational trade-off explicit: the model catches
 
 ### Coefficient plot
 
-![Model coefficients](reports/figures/model_coefficients.png)
+![Model coefficients](reports/figures/model_coefficients.png
+- `reports/figures/calibration_curve.png`)
 
 ## Exploratory analysis
 
