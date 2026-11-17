@@ -14,6 +14,6 @@ It contains:
 
 The workbook is a presentation layer over the verified project outputs; the repository's Python pipeline and CSV reports remain the analytical source of truth.
 
-**Local artifact:** `Employee_Attrition_Recruiter_Dashboard.xlsx`
+**Repository artifact:** [`dashboard/Employee_Attrition_Recruiter_Dashboard.xlsx`](../dashboard/Employee_Attrition_Recruiter_Dashboard.xlsx)
 
-After the workbook is uploaded to the repository under `dashboard/`, the README can link directly to the binary workbook.
+The workbook is committed under `dashboard/` and can be opened/downloaded directly from the repository.
