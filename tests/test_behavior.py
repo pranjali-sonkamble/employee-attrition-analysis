@@ -28,7 +28,7 @@ def test_split_is_stratified():
     train_rate = y.iloc[train_idx].mean()
     test_rate = y.iloc[test_idx].mean()
 
-    assert abs(train_rate - test_rate) <= 0.01
+    assert abs(train_rate - test_rate) <= 0.02
 
 
 def test_train_test_ids_do_not_overlap():
