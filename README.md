@@ -121,7 +121,7 @@ The data is split once using a stratified 80/20 split with random state 42:
 - Training: 1,176 rows (190 attrition cases)
 - Held-out test: 294 rows (47 attrition cases)
 
-Candidate models were compared using repeated stratified five-fold cross-validation with three repeats on the training partition. Logistic Regression was selected on mean Average Precision and ROC-AUC:
+Candidate models were compared using repeated stratified five-fold cross-validation with three repeats on the training partition. **Logistic Regression was the strongest among the fixed configurations tested** on mean Average Precision and ROC-AUC; this is not a claim that it is globally optimal because Random Forest and HistGradientBoosting were not separately hyperparameter-tuned:
 
 | Model | CV Average Precision (mean ± SD across 3 repeats) | CV ROC-AUC (mean ± SD across 3 repeats) |
 |---|---:|---:|
@@ -153,7 +153,7 @@ Confusion matrix:
 
 The model identified 30 of 47 attrition cases and missed 17. It flagged 86 records, of which 56 were false positives. This supports interpreting the model as a screening or ranking prototype, not a definitive predictor of an individual's intent.
 
-Full detail: [final evaluation](docs/final_evaluation.md), [test metrics](reports/final_test_metrics.csv), and [confusion matrix](reports/final_test_confusion_matrix.csv).
+Full detail: [final evaluation](docs/final_evaluation.md), [test metrics](reports/final_test_metrics.csv), and [confusion matrix](reports/final_test_confusion_matrix.csv).\n\n## Simple rules baseline\n\nA fixed, interpretable baseline flags an employee when **OverTime = Yes AND YearsAtCompany <= 3**. It is evaluated on the same held-out test partition as the frozen Logistic Regression, without fitting or tuning the rule. This provides a direct check of whether the ML model adds predictive value beyond a simple business-rule heuristic. Run `python src/rule_baseline.py`; the generated comparison is saved to `reports/rule_baseline_comparison.csv`.\n\nThe comparison should be interpreted on the same test partition and at the same 0.50 decision threshold. A stronger ML result is evidence of incremental predictive value in this benchmark, not evidence that the rule or model is causally explanatory.
 
 ## Uncertainty analysis
 
@@ -187,7 +187,7 @@ A controlled ablation removes **Age, Gender, and MaritalStatus** from model inpu
 The ablation script reports held-out Average Precision, recall, precision, ROC-AUC, flag rate, and subgroup results for Gender, MaritalStatus, and the predefined age bands:
 
 ```bash
-python src/sensitive_attribute_ablation.py
+python src/sensitive_attribute_ablation.py\npython src/rule_baseline.py\npython src/segment_statistics.py
 ```
 
 ### Ablation results
@@ -207,7 +207,7 @@ The detailed methodology and interpretation are documented in [docs/sensitive_at
 
 ## Subgroup diagnostics
 
-The frozen model was evaluated descriptively across gender and age groups at the same 0.50 threshold.
+The frozen model was evaluated descriptively across gender and age groups at the same 0.50 threshold. The subgroup CSV now includes percentile-bootstrap 95% intervals for attrition rates and recall (2,000 resamples per subgroup).
 
 | Group | Rows | Attrition cases | Precision | Recall | False-positive rate |
 |---|---:|---:|---:|---:|---:|
@@ -218,7 +218,7 @@ The frozen model was evaluated descriptively across gender and age groups at the
 | Age 37–43 | 72 | 7 | 0.357 | 0.714 | 0.138 |
 | Age 44+ | 61 | 11 | 0.333 | 0.273 | 0.120 |
 
-Performance is not uniform, particularly across age bands. This small, single-split diagnostic does not establish fairness or discrimination; uncertainty and a predefined fairness framework would be needed for a formal assessment. See [subgroup evaluation](docs/subgroup_evaluation.md) and [CSV results](reports/subgroup_evaluation.csv).
+Performance is not uniform, particularly across age bands. The 44+ subgroup has only **11 attrition cases**, and the model recalls **3 of those 11 (27.27%)**, so the point estimate is highly uncertain. The bootstrap intervals in the generated CSV make that uncertainty explicit. This small, single-split diagnostic does not establish fairness or discrimination; uncertainty and a predefined fairness framework would be needed for a formal assessment. See [subgroup evaluation](docs/subgroup_evaluation.md) and [CSV results](reports/subgroup_evaluation.csv).
 
 ## Responsible use and limitations
 
