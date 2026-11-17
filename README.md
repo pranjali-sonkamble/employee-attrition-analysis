@@ -2,8 +2,8 @@
 
 An end-to-end analytical prototype for understanding employee attrition patterns and evaluating a machine-learning model for attrition risk prediction using the IBM HR Analytics Employee Attrition & Performance benchmark dataset.
 
-> **Project status:** Portfolio-ready analytical prototype  
-> **Primary focus:** Data analysis, model evaluation, interpretation, uncertainty, subgroup diagnostics, and reproducibility  
+> **Project status:** Portfolio-ready analytical prototype
+> **Primary focus:** Data analysis, model evaluation, interpretation, uncertainty, subgroup diagnostics, and reproducibility
 > **Important:** This project is not a production HR decision system and should not be used as the sole basis for employment decisions.
 
 ---
@@ -14,7 +14,7 @@ Employee attrition is an important workforce analytics problem because organizat
 
 This project follows a complete analytical workflow:
 
-**Raw Dataset → Data Validation → EDA → Preprocessing → Model Comparison → Threshold Evaluation → Final Held-Out Test → Uncertainty Analysis → Model Interpretation → Subgroup Evaluation → Regression Tests**
+**Raw Dataset â†’ Data Validation â†’ EDA â†’ Preprocessing â†’ Model Comparison â†’ Threshold Evaluation â†’ Final Held-Out Test â†’ Uncertainty Analysis â†’ Model Interpretation â†’ Subgroup Evaluation â†’ Regression Tests**
 
 The project deliberately separates model development from final evaluation so that the held-out test set is not used to tune the model or select the final threshold.
 
@@ -178,11 +178,11 @@ The preprocessing pipeline is implemented with reusable scikit-learn / imbalance
 
 ### Pipeline behavior
 
-- Numeric missing values → median imputation
-- Categorical missing values → most-frequent imputation
-- Categorical variables → one-hot encoding
-- Numeric variables → scaling where required
-- Unknown categorical levels → safely ignored during transformation
+- Numeric missing values â†’ median imputation
+- Categorical missing values â†’ most-frequent imputation
+- Categorical variables â†’ one-hot encoding
+- Numeric variables â†’ scaling where required
+- Unknown categorical levels â†’ safely ignored during transformation
 - Optional SMOTE support is available in the modeling pipeline
 
 The preprocessing logic is implemented in:
@@ -305,13 +305,13 @@ Configuration:
 
 | Metric | Estimate | 95% CI |
 |---|---:|---:|
-| Average Precision | 0.561 | 0.425–0.689 |
-| ROC-AUC | 0.803 | 0.727–0.873 |
-| Precision | 0.349 | 0.247–0.453 |
-| Recall | 0.638 | 0.489–0.778 |
-| Recall @ Top 10% | 0.362 | 0.260–0.475 |
-| Recall @ Top 20% | 0.532 | 0.420–0.676 |
-| Recall @ Top 30% | 0.638 | 0.524–0.810 |
+| Average Precision | 0.561 | 0.425â€“0.689 |
+| ROC-AUC | 0.803 | 0.727â€“0.873 |
+| Precision | 0.349 | 0.247â€“0.453 |
+| Recall | 0.638 | 0.489â€“0.778 |
+| Recall @ Top 10% | 0.362 | 0.260â€“0.475 |
+| Recall @ Top 20% | 0.532 | 0.420â€“0.676 |
+| Recall @ Top 30% | 0.638 | 0.524â€“0.810 |
 
 The bootstrap analysis does **not** modify the model or threshold. It quantifies uncertainty around the already-frozen test evaluation.
 
@@ -331,21 +331,21 @@ Because the model is linear in the transformed feature space, coefficients can b
 
 | Feature | Coefficient | Odds Ratio |
 |---|---:|---:|
-| JobRole — Laboratory Technician | 1.1943 | 3.301 |
-| JobRole — Sales Representative | 1.1206 | 3.067 |
-| BusinessTravel — Travel Frequently | 0.7876 | 2.198 |
-| OverTime — Yes | 0.7615 | 2.142 |
-| EducationField — Human Resources | 0.7211 | 2.057 |
+| JobRole â€” Laboratory Technician | 1.1943 | 3.301 |
+| JobRole â€” Sales Representative | 1.1206 | 3.067 |
+| BusinessTravel â€” Travel Frequently | 0.7876 | 2.198 |
+| OverTime â€” Yes | 0.7615 | 2.142 |
+| EducationField â€” Human Resources | 0.7211 | 2.057 |
 
 ### Strongest negative coefficients
 
 | Feature | Coefficient | Odds Ratio |
 |---|---:|---:|
-| JobRole — Research Director | -1.4657 | 0.231 |
-| BusinessTravel — Non-Travel | -0.9939 | 0.370 |
-| OverTime — No | -0.8928 | 0.410 |
-| EducationField — Other | -0.7981 | 0.450 |
-| JobRole — Healthcare Representative | -0.6472 | 0.524 |
+| JobRole â€” Research Director | -1.4657 | 0.231 |
+| BusinessTravel â€” Non-Travel | -0.9939 | 0.370 |
+| OverTime â€” No | -0.8928 | 0.410 |
+| EducationField â€” Other | -0.7981 | 0.450 |
+| JobRole â€” Healthcare Representative | -0.6472 | 0.524 |
 
 ### Interpretation caution
 
@@ -376,9 +376,9 @@ The frozen model was evaluated descriptively across selected gender and age subg
 
 | Age Group | Rows | Attrition Cases | Precision | Recall | FPR | Flag Rate |
 |---|---:|---:|---:|---:|---:|---:|
-| 18–30 | 77 | 18 | 0.438 | 0.778 | 0.305 | 0.416 |
-| 31–36 | 84 | 11 | 0.258 | 0.727 | 0.315 | 0.369 |
-| 37–43 | 72 | 7 | 0.357 | 0.714 | 0.138 | 0.194 |
+| 18â€“30 | 77 | 18 | 0.438 | 0.778 | 0.305 | 0.416 |
+| 31â€“36 | 84 | 11 | 0.258 | 0.727 | 0.315 | 0.369 |
+| 37â€“43 | 72 | 7 | 0.357 | 0.714 | 0.138 | 0.194 |
 | 44+ | 61 | 11 | 0.333 | 0.273 | 0.120 | 0.148 |
 
 The subgroup results show that model performance is **not uniform across all groups**, particularly across age bands.
@@ -504,50 +504,50 @@ Run the scripts from the project root with the virtual environment activated.
 
 ```text
 employee-attrition-analysis/
-│
-├── data/
-│   ├── raw/
-│   └── processed/
-│
-├── docs/
-│   ├── project_charter.md
-│   ├── data_source.md
-│   ├── eda_findings.md
-│   ├── threshold_evaluation.md
-│   ├── final_evaluation.md
-│   ├── model_interpretation.md
-│   └── subgroup_evaluation.md
-│
-├── models/
-│
-├── notebooks/
-│
-├── reports/
-│   ├── figures/
-│   ├── data_inspection.txt
-│   ├── column_validation.txt
-│   ├── model_interpretation.csv
-│   ├── subgroup_evaluation.csv
-│   └── test_uncertainty.csv
-│
-├── src/
-│   ├── data_prep.py
-│   ├── preprocessing.py
-│   ├── model_zoo.py
-│   ├── compare_models.py
-│   ├── evaluate_thresholds.py
-│   ├── final_evaluation.py
-│   ├── test_uncertainty.py
-│   ├── model_interpretation.py
-│   └── subgroup_evaluation.py
-│
-├── tests/
-│   └── test_data_pipeline.py
-│
-├── .gitignore
-├── requirements.txt
-├── requirements-lock.txt
-└── README.md
+â”‚
+â”œâ”€â”€ data/
+â”‚   â”œâ”€â”€ raw/
+â”‚   â””â”€â”€ processed/
+â”‚
+â”œâ”€â”€ docs/
+â”‚   â”œâ”€â”€ project_charter.md
+â”‚   â”œâ”€â”€ data_source.md
+â”‚   â”œâ”€â”€ eda_findings.md
+â”‚   â”œâ”€â”€ threshold_evaluation.md
+â”‚   â”œâ”€â”€ final_evaluation.md
+â”‚   â”œâ”€â”€ model_interpretation.md
+â”‚   â””â”€â”€ subgroup_evaluation.md
+â”‚
+â”œâ”€â”€ models/
+â”‚
+â”œâ”€â”€ notebooks/
+â”‚
+â”œâ”€â”€ reports/
+â”‚   â”œâ”€â”€ figures/
+â”‚   â”œâ”€â”€ data_inspection.txt
+â”‚   â”œâ”€â”€ column_validation.txt
+â”‚   â”œâ”€â”€ model_interpretation.csv
+â”‚   â”œâ”€â”€ subgroup_evaluation.csv
+â”‚   â””â”€â”€ test_uncertainty.csv
+â”‚
+â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ data_prep.py
+â”‚   â”œâ”€â”€ preprocessing.py
+â”‚   â”œâ”€â”€ model_zoo.py
+â”‚   â”œâ”€â”€ compare_models.py
+â”‚   â”œâ”€â”€ evaluate_thresholds.py
+â”‚   â”œâ”€â”€ final_evaluation.py
+â”‚   â”œâ”€â”€ test_uncertainty.py
+â”‚   â”œâ”€â”€ model_interpretation.py
+â”‚   â””â”€â”€ subgroup_evaluation.py
+â”‚
+â”œâ”€â”€ tests/
+â”‚   â””â”€â”€ test_data_pipeline.py
+â”‚
+â”œâ”€â”€ .gitignore
+â”œâ”€â”€ requirements.txt
+â”œâ”€â”€ requirements-lock.txt
+â””â”€â”€ README.md
 ```
 
 ---
