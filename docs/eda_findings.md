@@ -30,7 +30,7 @@
 ### Income and tenure
 
 - The lowest monthly-income band had an attrition rate of **29.27%**.
-- The shortest company-tenure band, `YearsAtCompany` in **(-0.001, 3.0]**, had an attrition rate of **25.96%**.
+- Employees with `YearsAtCompany` **≤ 3 years** had an attrition rate of **25.96%**. This is the project's definition of the early-tenure group.
 - The longest total-working-years band, covering more than 15 years in the reported grouping, had an attrition rate of **8.71%**.
 
 ### Sample-size cautions
