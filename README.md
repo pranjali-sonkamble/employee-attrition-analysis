@@ -69,6 +69,15 @@ The raw CSV is not committed. See [data/README.md](data/README.md) for download 
 
 These are descriptive or predictive results from a fictional benchmark dataset. They should not be interpreted as causal effects or evidence about a real employer.
 
+## Business recommendations
+
+The following actions are **hypotheses based on observed associations in this fictional benchmark**, not causal prescriptions:
+
+1. **Review sustained overtime exposure:** prioritize workload and staffing reviews for teams or roles with consistently high overtime, because overtime is associated with 30.53% attrition versus 10.44% without overtime.
+2. **Strengthen early-tenure retention:** use structured check-ins, onboarding follow-up, and manager support for employees with ≤3 years at the company, where observed attrition is 25.96%.
+3. **Investigate role-specific retention patterns:** examine workload, progression, compensation, and manager support in Sales Representative roles, which show 39.76% observed attrition in this benchmark.
+4. **Use the model as a screening aid, not a decision rule:** any real intervention should combine model signals with employee context, human review, and organization-specific evidence rather than treating predicted risk as an explanation or outcome.
+
 ## Portfolio visuals
 
 ### Attrition distribution
@@ -83,7 +92,7 @@ These are descriptive or predictive results from a fictional benchmark dataset. 
 
 ![Final test confusion matrix](reports/figures/final_test_confusion_matrix.png)
 
-The confusion matrix makes the operational trade-off explicit: the model catches 30 of 47 attrition cases, but 56 of the 86 flagged records are false positives.
+The confusion matrix makes the operational trade-off explicit: the model catches 30 of 47 attrition cases, but 56 of the 86 flagged records are false positives. At the fixed 0.50 threshold, the model flags 86 of 294 test records, a **29.25% flag rate (about 29%)**.
 
 ### Coefficient plot
 
@@ -114,14 +123,14 @@ The data is split once using a stratified 80/20 split with random state 42:
 
 Candidate models were compared using repeated stratified five-fold cross-validation with three repeats on the training partition. Logistic Regression was selected on mean Average Precision and ROC-AUC:
 
-| Model | CV Average Precision | CV ROC-AUC |
+| Model | CV Average Precision (mean ± SD across 3 repeats) | CV ROC-AUC (mean ± SD across 3 repeats) |
 |---|---:|---:|
 | Logistic Regression | **0.6130 ± 0.0065** | **0.8251 ± 0.0017** |
 | Hist Gradient Boosting | 0.5472 ± 0.0162 | 0.8005 ± 0.0098 |
 | Random Forest | 0.5460 ± 0.0091 | 0.8026 ± 0.0001 |
 | Dummy baseline | 0.1616 ± 0.0000 | 0.5000 ± 0.0000 |
 
-Threshold trade-offs were analyzed separately using training-set out-of-fold probabilities. The final test threshold was fixed at **0.50**; it was not selected from the held-out test labels. The OOF analysis showed that 0.60 raised F1 from 0.491 to 0.539 but reduced recall from 73.68% to 66.84%; because no organization-specific cost or review-capacity constraint was predefined, 0.50 was retained as the conventional reference operating point rather than optimizing an arbitrary F1 objective.
+Threshold trade-offs were analyzed separately using training-set out-of-fold probabilities. The final test threshold was fixed at **0.50**; it was not selected from the held-out test labels. The OOF analysis showed that 0.60 raised F1 from 0.491 to 0.539 but reduced recall from 73.68% to 66.84%. Because no organization-specific cost ratio or review-capacity constraint was predefined, 0.50 was retained as the fixed reference threshold for the final evaluation rather than selecting a threshold by optimizing an arbitrary F1 objective. At 0.50, the final model flags 86 of 294 test records, a **29.25% flag rate (about 29%)**.
 
 ## Final held-out test results
 
@@ -169,7 +178,19 @@ See [model interpretation](docs/model_interpretation.md) and [coefficient output
 
 ## Protected attributes
 
-`Age`, `Gender`, and `MaritalStatus` remain model features because they are part of the benchmark schema and the primary model uses the available modeling features rather than excluding these columns a priori. They are also examined in subgroup diagnostics; **subgroup evaluation needs the attribute values for grouping, not as model inputs**. This project has not run a feature-exclusion ablation, so it makes no claim about whether removing them would change predictive performance or subgroup behavior. They must not be used to make or justify employment decisions in a real HR setting.
+`Age`, `Gender`, and `MaritalStatus` are included in the primary model because they are part of the benchmark schema and the primary specification uses the available modeling features rather than excluding these columns a priori. A separate **sensitive-attribute ablation** removes all three from model inputs while keeping the same train/test split, model specification, and threshold; see [Sensitive-attribute ablation](docs/sensitive_attribute_ablation.md) and the generated CSV results. These attributes are also retained in the evaluation data for subgroup grouping. They must not be used to make or justify employment decisions in a real HR setting.
+
+## Sensitive-attribute ablation
+
+A controlled ablation removes **Age, Gender, and MaritalStatus** from model inputs and refits the same Logistic Regression configuration on the same training partition. The held-out test partition and 0.50 threshold are unchanged. The original attribute values are retained only for subgroup grouping in the evaluation.
+
+The ablation script reports held-out Average Precision, recall, precision, ROC-AUC, flag rate, and subgroup results for Gender, MaritalStatus, and the predefined age bands:
+
+```bash
+python src/sensitive_attribute_ablation.py
+```
+
+Results are saved to [reports/sensitive_attribute_ablation.csv](reports/sensitive_attribute_ablation.csv) and [reports/sensitive_attribute_ablation_subgroups.csv](reports/sensitive_attribute_ablation_subgroups.csv). The detailed methodology and interpretation are documented in [docs/sensitive_attribute_ablation.md](docs/sensitive_attribute_ablation.md).
 
 ## Subgroup diagnostics
 
@@ -232,6 +253,7 @@ python src/final_evaluation.py
 python src/test_uncertainty.py
 python src/model_interpretation.py
 python src/subgroup_evaluation.py
+python src/sensitive_attribute_ablation.py
 ```
 
 The latest recorded local test run passed all 10 regression tests. GitHub Actions runs the regression suite on pushes to `main` and pull requests using the pinned lock file on Ubuntu Linux.
@@ -266,6 +288,8 @@ employee-attrition-analysis/
 │   ├── preprocessing_summary.txt
 │   ├── relationship_summary.txt
 │   ├── split_summary.txt
+│   ├── sensitive_attribute_ablation.csv
+│   ├── sensitive_attribute_ablation_subgroups.csv
 │   ├── subgroup_evaluation.csv
 │   ├── test_uncertainty.csv
 │   └── threshold_evaluation.csv
@@ -281,6 +305,7 @@ employee-attrition-analysis/
 │   ├── model_zoo.py
 │   ├── preprocessing.py
 │   ├── subgroup_evaluation.py
+│   ├── sensitive_attribute_ablation.py
 │   ├── test_uncertainty.py
 │   ├── train_models.py
 │   ├── run_all.py
