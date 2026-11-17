@@ -15,6 +15,7 @@ STAGES = [
     "src/test_uncertainty.py",
     "src/model_interpretation.py",
     "src/subgroup_evaluation.py",
+    "src/sensitive_attribute_ablation.py",
 ]
 
 
