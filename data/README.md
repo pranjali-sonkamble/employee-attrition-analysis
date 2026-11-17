@@ -7,6 +7,8 @@ The raw dataset is not stored in this repository.
 1. Download **IBM HR Analytics Employee Attrition & Performance** from Kaggle:
    https://www.kaggle.com/datasets/pavansubhasht/ibm-hr-analytics-attrition-dataset
 
+   **Kaggle download note:** a Kaggle account/sign-in may be required to download the dataset. The repository does not redistribute the raw CSV.
+
 2. Save the CSV file as:
 
    `data/raw/WA_Fn-UseC_-HR-Employee-Attrition.csv`
