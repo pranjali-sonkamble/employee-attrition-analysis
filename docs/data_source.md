@@ -1,111 +1,56 @@
-\# Dataset Source and Provenance
+# Dataset Source and Provenance
 
+## Dataset details
 
+- **Dataset:** IBM HR Analytics Employee Attrition & Performance
+- **Platform:** Kaggle
+- **Uploader:** pavansubhasht
+- **Source:** https://www.kaggle.com/datasets/pavansubhasht/ibm-hr-analytics-attrition-dataset
+- **Access date recorded in the original project notes:** 21 October 2026
+- **Dataset description:** The Kaggle page describes this as a fictional dataset created by IBM data scientists.
 
-\## Dataset Details
+The repository does not contain the raw CSV. Follow the download instructions in [data/README.md](../data/README.md).
 
+## Licence and redistribution
 
+The Kaggle page was recorded as showing Open Database and Database Contents licensing:
 
-\- \*\*Dataset name:\*\* IBM HR Analytics Employee Attrition \& Performance
+- [Open Database License (ODbL) 1.0](https://opendatacommons.org/licenses/odbl/1-0/)
+- [Database Contents License (DbCL) 1.0](https://opendatacommons.org/licenses/dbcl/1-0/)
 
-\- \*\*Platform:\*\* Kaggle
+**Redistribution status: not independently confirmed.** The raw CSV remains excluded from this public repository. Review the licence texts and source-page terms before redistributing the dataset.
 
-\- \*\*Uploader:\*\* pavansubhasht
+## Initial data inspection
 
-\- \*\*Source URL:\*\* https://www.kaggle.com/datasets/pavansubhasht/ibm-hr-analytics-attrition-dataset
+The committed local inspection output records:
 
-\- \*\*Date accessed:\*\* 21 October 2026
+- **Rows:** 1,470
+- **Columns:** 35
+- **Missing values:** 0
+- **Duplicate rows:** 0
+- **Constant columns:** `EmployeeCount`, `Over18`, and `StandardHours`
+- **Unique identifier:** `EmployeeNumber` (1,470 unique values)
 
-- **Dataset description:** The Kaggle page describes the dataset as "a fictional data set created by IBM data scientists."
-
-
-## Licence
-
-Licence shown on the Kaggle page (accessed 21 October 2026):
-
-Database: Open Database, Contents: Database Contents
-
-- Open Database License (ODbL) 1.0:
-  https://opendatacommons.org/licenses/odbl/1-0/
-- Database Contents License (DbCL) 1.0:
-  https://opendatacommons.org/licenses/dbcl/1-0/
-
-The ODbL governs the database, while the DbCL addresses rights in individual database contents. Consult the official licence texts for the applicable terms.
-
-
-\## Intended Use
-
-
-
-This project uses the dataset for educational analysis, exploratory data analysis, and employee attrition classification experiments.
-
-
-
-The dataset is described as fictional. Findings must not be presented as verified facts about a real employer or used as the sole basis for employment decisions.
-
-
-
-\## Redistribution Status
-
-
-
-\*\*Not yet confirmed.\*\*
-
-
-
-Until the applicable licence terms and redistribution requirements are verified, the original CSV will be excluded from the public Git repository. The repository will reference the original dataset source and provide download instructions instead.
-
-
-
-\## Initial Data Inspection
-
-
-
-The inspection script was executed against the downloaded CSV.
-
-
-
-\- \*\*Rows:\*\* 1,470
-
-\- \*\*Columns:\*\* 35
-
-\- \*\*Missing values:\*\* 0
-
-\- \*\*Duplicate rows:\*\* 0
-
-\- \*\*Constant columns:\*\* `EmployeeCount`, `Over18`, `StandardHours`
-
-
-
-\### Attrition Distribution
-
-
+### Target distribution
 
 | Attrition | Count | Proportion |
-
 |---|---:|---:|
-
 | No | 1,233 | 83.88% |
-
 | Yes | 237 | 16.12% |
 
+These values describe the local CSV used for this project; they are not claims about a real employer's workforce.
 
+## Validation and analysis status
 
-These figures are outputs from the local inspection script, not independently verified claims about the original dataset's published metadata.
+The dataset inspection, column validation, exploratory analysis, model comparison, threshold evaluation, final held-out test evaluation, uncertainty estimation, model interpretation, and subgroup diagnostics are documented in the repository.
 
+Key evidence:
 
+- [reports/data_inspection.txt](../reports/data_inspection.txt)
+- [reports/column_validation.txt](../reports/column_validation.txt)
+- [reports/eda_summary.txt](../reports/eda_summary.txt)
+- [docs/eda_findings.md](eda_findings.md)
+- [docs/final_evaluation.md](final_evaluation.md)
+- [docs/subgroup_evaluation.md](subgroup_evaluation.md)
 
-See `reports/data\_inspection.txt` for the complete inspection output.
-
-
-
-\## Validation Status
-
-
-
-The initial file inspection is complete. Further data-quality checks, feature selection, exploratory analysis, and modelling remain to be completed.
-
-
-
-No model performance metrics or business conclusions are claimed in this document.
-
+The project remains an educational analytical prototype. Because the data is fictional and the analysis is observational, the findings must not be presented as verified facts about a real organization or used as the sole basis for employment decisions.
