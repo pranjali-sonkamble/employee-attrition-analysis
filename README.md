@@ -53,6 +53,44 @@ Local inspection records 1,470 rows and 35 columns, with no missing values or du
 
 The raw CSV is not committed. See [data/README.md](data/README.md) for download and placement instructions, and [docs/data_source.md](docs/data_source.md) for provenance and redistribution notes.
 
+## Key business findings
+
+> **The business story comes before the model.** The descriptive analysis identifies where observed attrition is concentrated; the model then evaluates whether those patterns can support a cautious risk-screening workflow.
+
+| Finding | Observed result |
+|---|---:|
+| Overtime attrition | **30.53%** vs **10.44%** without overtime |
+| Sales Representative attrition | **39.76%** |
+| Early-tenure attrition | **25.96%** |
+| Single-employee attrition | **25.53%** |
+| Final test recall | **63.83%** |
+| Final test precision | **34.88%** |
+| Test false positives | **56 of 86 flagged records** |
+
+These are descriptive or predictive results from a fictional benchmark dataset. They should not be interpreted as causal effects or evidence about a real employer.
+
+## Portfolio visuals
+
+### Attrition distribution
+
+![Attrition distribution](reports/figures/01_attrition_distribution.png)
+
+### Key segmentation: attrition by job role
+
+![Attrition by job role](reports/figures/attrition_by_jobrole.png)
+
+### Model decision trade-off
+
+![Final test confusion matrix](reports/figures/final_test_confusion_matrix.png)
+
+The confusion matrix makes the operational trade-off explicit: the model catches 30 of 47 attrition cases, but 56 of the 86 flagged records are false positives.
+
+### Model interpretation
+
+![Model coefficients](reports/figures/model_coefficients.png)
+
+The coefficient analysis is interpreted as conditional model association, not causation. Numeric features were standardized before modeling.
+
 ## Exploratory analysis
 
 The EDA examines attrition rates across work patterns, job roles, demographics, compensation, satisfaction, and tenure. A few descriptive findings from the local dataset:
