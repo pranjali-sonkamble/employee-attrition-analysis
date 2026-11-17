@@ -24,7 +24,7 @@ An end-to-end analytical prototype for understanding employee attrition patterns
 | Test Average Precision | **0.5612** |
 | Test precision / recall | **0.3488 / 0.6383** |
 | Bootstrap resamples | 2,000 |
-| Regression tests | 10 passed (local run) |
+| Regression tests | 16 expected after behavior checks (6 added) |
 
 The source dataset is a **fictional benchmark**. These findings are not claims about IBM's actual workforce or any real employer.
 
@@ -269,7 +269,7 @@ python src/subgroup_evaluation.py
 python src/sensitive_attribute_ablation.py
 ```
 
-The latest recorded local test run passed all 10 regression tests. GitHub Actions runs the regression suite on pushes to `main` and pull requests using the pinned lock file on Ubuntu Linux.
+The existing suite had 10 regression tests; this revision adds 6 behavior-focused tests covering split stratification, train/test ID separation, threshold behavior, metric correctness, the rules baseline condition, and confidence-interval behavior. After the local run, the expected total is 16 passing tests. GitHub Actions runs the regression suite on pushes to `main` and pull requests using the pinned lock file on Ubuntu Linux.
 
 ## Repository structure
 
@@ -282,6 +282,7 @@ employee-attrition-analysis/
 │   ├── eda_findings.md
 │   ├── final_evaluation.md
 │   ├── model_interpretation.md
+│   ├── main_segment_statistics.md
 │   ├── project_charter.md
 │   ├── subgroup_evaluation.md
 │   ├── threshold_evaluation.md
@@ -297,10 +298,12 @@ employee-attrition-analysis/
 │   ├── final_test_metrics.csv
 │   ├── model_comparison.csv
 │   ├── model_comparison_repeats.csv
+│   ├── main_segment_statistics.csv
 │   ├── model_interpretation.csv
 │   ├── numeric_attrition_rates.csv
 │   ├── preprocessing_summary.txt
 │   ├── relationship_summary.txt
+│   ├── rule_baseline_comparison.csv
 │   ├── split_summary.txt
 │   ├── subgroup_evaluation.csv
 │   ├── sensitive_attribute_ablation.csv
