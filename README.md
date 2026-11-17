@@ -24,7 +24,7 @@ An end-to-end analytical prototype for understanding employee attrition patterns
 | Test Average Precision | **0.5612** |
 | Test precision / recall | **0.3488 / 0.6383** |
 | Bootstrap resamples | 2,000 |
-| Regression tests | **10 committed tests** |
+| Regression tests | **16 committed tests** |
 
 The source dataset is a **fictional benchmark**. These findings are not claims about IBM's actual workforce or any real employer.
 
@@ -159,7 +159,11 @@ Confusion matrix:
 
 The model identified 30 of 47 attrition cases and missed 17. It flagged 86 records, of which 56 were false positives. This supports interpreting the model as a screening or ranking prototype, not a definitive predictor of an individual's intent.
 
-Full detail: [final evaluation](docs/final_evaluation.md), [test metrics](reports/final_test_metrics.csv), and [confusion matrix](reports/final_test_confusion_matrix.csv).\n\n## Simple rules baseline\n\nA fixed, interpretable baseline flags an employee when **OverTime = Yes AND YearsAtCompany <= 3**. It is evaluated on the same held-out test partition as the frozen Logistic Regression, without fitting or tuning the rule. This provides a direct check of whether the ML model adds predictive value beyond a simple business-rule heuristic. Run `python src/rule_baseline.py`; the generated comparison is saved to `reports/rule_baseline_comparison.csv`.\n\nThe comparison should be interpreted on the same test partition and at the same 0.50 decision threshold. A stronger ML result is evidence of incremental predictive value in this benchmark, not evidence that the rule or model is causally explanatory.
+Full detail: [final evaluation](docs/final_evaluation.md), [test metrics](reports/final_test_metrics.csv), and [confusion matrix](reports/final_test_confusion_matrix.csv).
+
+## Simple rules baseline\n\nA fixed, interpretable baseline flags an employee when **OverTime = Yes AND YearsAtCompany <= 3**. It is evaluated on the same held-out test partition as the frozen Logistic Regression, without fitting or tuning the rule. This provides a direct check of whether the ML model adds predictive value beyond a simple business-rule heuristic. Run `python src/rule_baseline.py`; the generated comparison is saved to `reports/rule_baseline_comparison.csv`.
+
+The comparison should be interpreted on the same test partition and at the same 0.50 decision threshold. A stronger ML result is evidence of incremental predictive value in this benchmark, not evidence that the rule or model is causally explanatory.
 
 ## Uncertainty analysis
 
@@ -193,7 +197,9 @@ A controlled ablation removes **Age, Gender, and MaritalStatus** from model inpu
 The ablation script reports held-out Average Precision, recall, precision, ROC-AUC, flag rate, and subgroup results for Gender, MaritalStatus, and the predefined age bands:
 
 ```bash
-python src/sensitive_attribute_ablation.py\npython src/rule_baseline.py\npython src/segment_statistics.py
+python src/sensitive_attribute_ablation.py
+python src/rule_baseline.py
+python src/segment_statistics.py
 ```
 
 ### Ablation results
@@ -275,7 +281,7 @@ python src/subgroup_evaluation.py
 python src/sensitive_attribute_ablation.py
 ```
 
-The committed test suite currently contains 10 regression tests covering dataset loading, target/drop-column validation, feature counts, reproducible stratified splitting, preprocessing structure, missing-value safety, pipeline structure, probability output, and binary predictions. GitHub Actions runs the regression suite on pushes to `main` and pull requests using the pinned lock file on Ubuntu Linux.
+The committed test suite currently contains 16 regression tests covering dataset loading, target/drop-column validation, feature counts, reproducible stratified splitting, preprocessing structure, missing-value safety, pipeline structure, probability output, and binary predictions. GitHub Actions runs the regression suite on pushes to `main` and pull requests using the pinned lock file on Ubuntu Linux.
 
 ## Repository structure
 
