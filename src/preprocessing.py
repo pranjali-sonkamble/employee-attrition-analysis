@@ -82,7 +82,7 @@ def build_preprocessor(scale_numeric=True):
 
 
 def build_model_pipeline(classifier, scale_numeric=True, use_smote=False):
-    """Combine preprocessing, optional SMOTE, and a classifier."""
+    """Combine leakage-aware preprocessing, optional SMOTE, and a classifier."""
     steps = [
         ("preprocessor", build_preprocessor(scale_numeric=scale_numeric)),
     ]
