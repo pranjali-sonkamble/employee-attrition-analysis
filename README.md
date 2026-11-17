@@ -1,5 +1,7 @@
 # Employee Attrition Analysis & Prediction
 
+[![CI](https://github.com/pranjali-sonkamble/employee-attrition-analysis/actions/workflows/ci.yml/badge.svg)](https://github.com/pranjali-sonkamble/employee-attrition-analysis/actions/workflows/ci.yml)
+
 An end-to-end analytical prototype for understanding employee attrition patterns and evaluating a machine-learning model for attrition risk prediction using the IBM HR Analytics Employee Attrition & Performance benchmark dataset.
 
 > **Project status:** Completed analytical portfolio prototype  
@@ -185,7 +187,7 @@ python src/model_interpretation.py
 python src/subgroup_evaluation.py
 ```
 
-The README reports the latest recorded local test run (10 passed); GitHub Actions/CI status is not claimed.
+The latest recorded local test run passed all 10 regression tests. GitHub Actions also runs the regression suite on pushes to `main` and pull requests.
 
 ## Repository structure
 
