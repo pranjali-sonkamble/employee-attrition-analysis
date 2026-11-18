@@ -1,6 +1,6 @@
 """Evaluate a simple deterministic overtime + short-tenure baseline.
 
-The rule is intentionally fixed before evaluation:
+The rule is an illustrative, post-hoc baseline:
 flag attrition risk when OverTime == "Yes" AND YearsAtCompany <= 3.
 It is evaluated on the same held-out test partition as the frozen Logistic
 Regression model so the comparison is apples-to-apples.
