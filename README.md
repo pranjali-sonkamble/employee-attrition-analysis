@@ -359,7 +359,8 @@ employee-attrition-analysis/
 │   ├── run_all.py
 │   └── validate_columns.py
 ├── tests/
-│   └── test_data_pipeline.py
+│   ├── test_data_pipeline.py
+│   └── test_behavior.py
 ├── dashboard/
 │   └── Employee_Attrition_Recruiter_Dashboard.xlsx
 ├── .gitignore
