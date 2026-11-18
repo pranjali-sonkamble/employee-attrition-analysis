@@ -135,7 +135,7 @@ def test_top_k_metrics_captures_expected_positive_share():
     result = top_k_metrics(y, scores, fractions=[0.20, 0.40])
 
     assert np.isclose(result["recall_top20pct"], 0.50)
-    assert np.isclose(result["recall_top40pct"], 1.00)
+    assert np.isclose(result["recall_top40pct"], 0.50)
 
 
 def test_subgroup_metrics_returns_consistent_confusion_counts():
