@@ -1,62 +1,112 @@
-"""Behavior-level regression tests for the evaluation logic."""
+"""Behavior-level regression tests for the project's evaluation logic and outputs."""
 
 import sys
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
-from sklearn.metrics import confusion_matrix, precision_score, recall_score
-from sklearn.model_selection import train_test_split
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
+ROOT = Path(__file__).resolve().parents[1]
+SRC = ROOT / "src"
+if str(SRC) not in sys.path:
+    sys.path.insert(0, str(SRC))
 
+from data_prep import get_split
+from preprocessing import build_model_pipeline
 from rule_baseline import rule_predictions
 from segment_statistics import wilson_interval
 
 
-def test_split_is_stratified():
-    y = pd.Series([0] * 84 + [1] * 16)
-    indices = np.arange(len(y))
+def test_get_split_returns_disjoint_stratified_partitions():
+    """Exercise the project's actual split function, not sklearn directly."""
+    X_train, X_test, y_train, y_test = get_split()
 
-    train_idx, test_idx = train_test_split(
-        indices,
-        test_size=0.20,
-        stratify=y,
-        random_state=42,
+    assert set(X_train.index).isdisjoint(set(X_test.index))
+    assert len(X_train) == 1176
+    assert len(X_test) == 294
+
+    overall_rate = pd.concat([y_train, y_test]).mean()
+    assert abs(y_train.mean() - overall_rate) < 0.02
+    assert abs(y_test.mean() - overall_rate) < 0.02
+
+
+def test_pipeline_scaler_is_fitted_from_training_data_only():
+    """Verify fitted preprocessing statistics come from X_train, not held-out X_test."""
+    from sklearn.linear_model import LogisticRegression
+
+    X_train, X_test, y_train, _ = get_split()
+    pipeline = build_model_pipeline(
+        LogisticRegression(
+            class_weight="balanced",
+            max_iter=2000,
+            random_state=42,
+        ),
+        scale_numeric=True,
+        use_smote=False,
+    )
+    pipeline.fit(X_train, y_train)
+
+    preprocessor = pipeline.named_steps["preprocessor"]
+    numeric_pipeline = preprocessor.named_transformers_["numeric"]
+    imputer = numeric_pipeline.named_steps["imputer"]
+    scaler = numeric_pipeline.named_steps["scaler"]
+
+    numeric_columns = preprocessor.transformers_[0][2]
+    train_imputed = pd.DataFrame(
+        imputer.transform(X_train[numeric_columns]),
+        columns=numeric_columns,
+        index=X_train.index,
     )
 
-    train_rate = y.iloc[train_idx].mean()
-    test_rate = y.iloc[test_idx].mean()
+    np.testing.assert_allclose(
+        scaler.mean_,
+        train_imputed.mean(axis=0).to_numpy(),
+        rtol=1e-10,
+        atol=1e-10,
+    )
 
-    assert abs(train_rate - test_rate) <= 0.02
+    test_imputed_mean = (
+        pd.DataFrame(
+            imputer.transform(X_test[numeric_columns]),
+            columns=numeric_columns,
+            index=X_test.index,
+        )
+        .mean(axis=0)
+        .to_numpy()
+    )
+    assert not np.allclose(
+        scaler.mean_,
+        test_imputed_mean,
+        rtol=1e-8,
+        atol=1e-8,
+    )
 
 
-def test_train_test_ids_do_not_overlap():
-    train_ids = {101, 102, 103, 104}
-    test_ids = {105, 106}
-    assert train_ids.isdisjoint(test_ids)
+def test_final_metrics_match_committed_confusion_matrix():
+    """Check that committed headline metrics agree with the confusion matrix."""
+    metrics = pd.read_csv(ROOT / "reports" / "final_test_metrics.csv").iloc[0]
+    matrix = pd.read_csv(
+        ROOT / "reports" / "final_test_confusion_matrix.csv",
+        index_col=0,
+    ).to_numpy()
 
+    tn, fp = matrix[0]
+    fn, tp = matrix[1]
+    total = tn + fp + fn + tp
 
-def test_threshold_is_applied_at_0_50():
-    probabilities = np.array([0.49, 0.50, 0.5001, 0.90])
-    predictions = (probabilities >= 0.50).astype(int)
-    assert predictions.tolist() == [0, 1, 1, 1]
+    precision = tp / (tp + fp)
+    recall = tp / (tp + fn)
+    f1 = 2 * precision * recall / (precision + recall)
 
-
-def test_confusion_metrics_are_correct():
-    y_true = np.array([0, 0, 0, 1, 1, 1])
-    y_pred = np.array([0, 1, 0, 1, 0, 1])
-
-    tn, fp, fn, tp = confusion_matrix(
-        y_true, y_pred, labels=[0, 1]
-    ).ravel()
-
-    assert (tn, fp, fn, tp) == (2, 1, 1, 2)
-    assert precision_score(y_true, y_pred) == 2 / 3
-    assert recall_score(y_true, y_pred) == 2 / 3
+    assert int(metrics["test_rows"]) == total
+    assert int(metrics["test_attrition_cases"]) == fn + tp
+    assert np.isclose(metrics["precision"], precision)
+    assert np.isclose(metrics["recall"], recall)
+    assert np.isclose(metrics["f1"], f1)
 
 
 def test_rule_baseline_requires_both_conditions():
+    """Exercise the project's actual rule implementation."""
     X = pd.DataFrame({
         "OverTime": ["Yes", "Yes", "No", "No"],
         "YearsAtCompany": [2, 5, 2, 5],
