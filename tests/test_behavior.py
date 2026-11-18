@@ -118,3 +118,19 @@ def test_wilson_interval_contains_observed_rate():
     low, high = wilson_interval(3, 11)
     observed = 3 / 11
     assert 0 <= low <= observed <= high <= 1
+
+
+def test_base_rate_brier_equals_p_times_one_minus_p():
+    """Exercise the project's calibration baseline calculation."""
+    y = np.array([0, 0, 0, 0, 1, 1, 0, 0, 0, 1])
+    observed_rate = y.mean()
+    assert np.isclose(
+        base_rate_brier_score(y),
+        observed_rate * (1 - observed_rate),
+    )
+
+
+def test_apply_threshold_returns_expected_flags():
+    """Exercise the project's actual thresholding function."""
+    probabilities = np.array([0.10, 0.49, 0.50, 0.5001, 0.90])
+    assert apply_threshold(probabilities, 0.50).tolist() == [0, 0, 1, 1, 1]
