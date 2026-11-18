@@ -1,252 +1,102 @@
-# Employee Attrition Analysis & Prediction
+# Employee Attrition Analysis
 
 [![CI](https://github.com/pranjali-sonkamble/employee-attrition-analysis/actions/workflows/ci.yml/badge.svg)](https://github.com/pranjali-sonkamble/employee-attrition-analysis/actions/workflows/ci.yml)
 
-An end-to-end analytical prototype for understanding employee attrition patterns and evaluating a machine-learning model for attrition risk prediction using the IBM HR Analytics Employee Attrition & Performance benchmark dataset.
+An end-to-end analytical prototype for understanding employee attrition patterns and evaluating a leakage-safe machine-learning **attrition-ranking** model on the IBM HR Analytics Employee Attrition & Performance benchmark dataset.
 
-> **Project status:** Completed analytical portfolio prototype  
-> **Primary focus:** EDA, model comparison, leakage-aware evaluation, threshold analysis, model interpretation, uncertainty, subgroup diagnostics, and reproducibility  
-> **Important:** This is not a production HR decision system and must not be used as the sole basis for employment decisions.
-
----
+> **Not a production HR decision system.** The dataset is fictional, and the model must not be used as the sole basis for employment decisions.
 
 ## Project at a glance
 
 | Item | Result |
 |---|---:|
 | Dataset | IBM HR Analytics Employee Attrition & Performance |
-| Dataset shape | 1,470 rows × 35 columns |
+| Dataset shape | 1,470 × 35 |
 | Modeling features | 30 |
-| Training / test split | 1,176 / 294 |
+| Train / test | 1,176 / 294 |
 | Selected model | Logistic Regression |
-| Threshold used for final test | 0.50 |
-| Test ROC-AUC | **0.8032** |
 | Test Average Precision | **0.5612** |
+| Test ROC-AUC | **0.8032** |
 | Test precision / recall | **0.3488 / 0.6383** |
+| Test F1 | **0.4511** |
+| Fixed threshold | 0.50 |
 | Bootstrap resamples | 2,000 |
-| Regression tests | **17 committed tests** |
 
-The source dataset is a **fictional benchmark**. These findings are not claims about IBM's actual workforce or any real employer.
+### What this means
 
-## Project overview
+At the fixed 0.50 threshold, the model catches **30 of 47** observed attrition cases while flagging **86 of 294** test records. If an organization could review only the **top 20% of scored employees**, the frozen test predictions identify about **53% of observed leavers (95% bootstrap CI: 42%–68%)**.
 
-Employee attrition is a workforce analytics problem. This project explores which employee and job attributes are associated with the observed target and evaluates whether a classification model can rank records by predicted attrition risk.
+This is a screening/ranking result, not a calibrated probability of an employee leaving.
 
-The workflow deliberately separates development from final testing:
+## Business findings
 
-**Data validation → EDA → preprocessing → repeated cross-validation → OOF threshold analysis → fixed model and threshold → held-out test evaluation → bootstrap uncertainty → model interpretation → subgroup diagnostics → regression tests**
+The benchmark contains several strong descriptive associations:
 
-The held-out test set was not used for model comparison or threshold selection.
+- **Overtime:** 30.53% observed attrition vs 10.44% without overtime.
+- **Sales Representatives:** 39.76% observed attrition.
+- **Early tenure (≤3 years):** 25.96% observed attrition.
+- **Single employees:** 25.53% observed attrition.
 
-## Dataset and data quality
+These are associations in a fictional benchmark, not causal effects. They should motivate investigation rather than automatic HR action.
 
-**Dataset:** [IBM HR Analytics Employee Attrition & Performance (Kaggle)](https://www.kaggle.com/datasets/pavansubhasht/ibm-hr-analytics-attrition-dataset)
+## Analytical workflow
 
-Local inspection records 1,470 rows and 35 columns, with no missing values or duplicate rows. The target distribution is:
+**Data validation → EDA → leakage-safe preprocessing → repeated cross-validation → OOF threshold analysis → fixed model/threshold → held-out test evaluation → bootstrap uncertainty → model interpretation → subgroup diagnostics → sensitive-attribute ablation → regression tests**
 
-| Attrition | Records | Share |
-|---|---:|---:|
-| No | 1,233 | 83.88% |
-| Yes | 237 | 16.12% |
+Preprocessing is inside the modeling pipeline: numeric imputation/scaling and categorical imputation/one-hot encoding are fitted from training data only. The primary Logistic Regression uses `class_weight="balanced"`. **SMOTE is disabled** because class weighting addresses the class imbalance without synthetic observations and keeps the final pipeline simpler; SMOTE was not separately benchmarked.
 
-`EmployeeNumber` is unique and treated as an identifier. `EmployeeCount`, `Over18`, and `StandardHours` are constant. Those four fields and the target are excluded from the 30 model input features.
+Model comparison uses repeated stratified 5-fold CV on the training partition:
 
-The raw CSV is not committed. See [data/README.md](data/README.md) for download and placement instructions, and [docs/data_source.md](docs/data_source.md) for provenance and redistribution notes.
-
-## Key business findings
-
-> **Observed attrition is concentrated in a few identifiable segments.** Overtime workers show 30.53% attrition versus 10.44% without overtime, while Sales Representatives show 39.76%. These descriptive patterns motivate the modeling work but do not establish causes.
-
-| Finding | Observed result |
-|---|---:|
-| Overtime attrition | **30.53%** vs **10.44%** without overtime |
-| Sales Representative attrition | **39.76%** |
-| Attrition among employees with ≤3 years at company | **25.96%** |
-| Single-employee attrition | **25.53%** |
-| Final test recall | **63.83%** |
-| Final test precision | **34.88%** |
-| Test false positives | **56 of 86 flagged records** |
-
-The segment analysis found statistically significant associations in this benchmark (chi-square tests, p < 0.001 for overtime, Sales Representative membership, and early tenure). Overtime attrition was 30.53% (95% CI: 26.30%–35.12%), and Sales Representative attrition was 39.76% (95% CI: 29.91%–50.52%, n=83). These are descriptive or predictive results from a fictional benchmark dataset and should not be interpreted as causal effects or evidence about a real employer.
-
-## Recruiter deliverables
-
-- [One-page recruiter summary](docs/recruiter_summary.md) — concise project scope, results, business findings, and responsible-AI evaluation.
-- [Excel recruiter dashboard](docs/dashboard.md) — KPI and model/segment/subgroup views built from the same verified project outputs. [Download the workbook](dashboard/Employee_Attrition_Recruiter_Dashboard.xlsx).
-- [Calibration analysis](docs/calibration.md) — held-out reliability analysis and reproduction instructions for the calibration plot.
-
-## Business recommendations
-
-The following actions are **hypotheses based on observed associations in this fictional benchmark**, not causal prescriptions:
-
-1. **Review sustained overtime exposure:** prioritize workload and staffing reviews for teams or roles with consistently high overtime, because overtime is associated with 30.53% attrition versus 10.44% without overtime.
-2. **Strengthen early-tenure retention:** use structured check-ins, onboarding follow-up, and manager support for employees with ≤3 years at the company, where observed attrition is 25.96%.
-3. **Investigate role-specific retention patterns:** examine workload, progression, compensation, and manager support in Sales Representative roles, which show 39.76% observed attrition in this benchmark.
-4. **Use the model as a screening aid, not a decision rule:** any real intervention should combine model signals with employee context, human review, and organization-specific evidence rather than treating predicted risk as an explanation or outcome.
-
-## Portfolio visuals
-
-### Attrition distribution
-
-![Attrition distribution](reports/figures/01_attrition_distribution.png)
-
-### Key segmentation: attrition by job role
-
-![Attrition by job role](reports/figures/attrition_by_jobrole.png)
-
-### Model decision trade-off
-
-![Final test confusion matrix](reports/figures/final_test_confusion_matrix.png)
-
-The confusion matrix makes the operational trade-off explicit: the model catches 30 of 47 attrition cases, but 56 of the 86 flagged records are false positives. At the fixed 0.50 threshold, the model flags 86 of 294 test records, a **29.25% flag rate (about 29%)**.
-
-### Coefficient plot
-
-![Model coefficients](reports/figures/model_coefficients.png)
-
-## Exploratory analysis
-
-The EDA examines attrition rates across work patterns, job roles, demographics, compensation, satisfaction, and tenure. A few descriptive findings from the local dataset:
-
-- Attrition was 30.53% among records with overtime and 10.44% among those without overtime.
-- Sales Representatives had an observed rate of 39.76% (83 records).
-- Single employees had an observed rate of 25.53%.
-- Employees with `YearsAtCompany` ≤ 3 years had an observed attrition rate of 25.96%; this is the definition used for the project’s early-tenure finding.
-- The age-band pattern was non-monotonic: 25.91% up to age 30, 16.02% at 31–36, 8.92% at 37–43, and 12.10% at 44–60.
-
-These are descriptive associations, not causal effects. The segment p-values and confidence intervals are descriptive statistics computed across the full dataset, including the held-out test rows; they were not used for model fitting or threshold selection. Group sizes differ and smaller groups require particular caution.
-
-Details: [EDA findings](docs/eda_findings.md), [EDA summary](reports/eda_summary.txt), and [relationship summary](reports/relationship_summary.txt).
-
-## Modeling and evaluation design
-
-The modeling input contains 30 features grouped into 7 categorical fields, 8 coded ordinal fields retained as numeric, and 15 other numeric fields. The reusable pipeline performs median imputation and numeric scaling, most-frequent categorical imputation, and one-hot encoding. The selected Logistic Regression uses `class_weight="balanced"` to account for the imbalanced target. **SMOTE is disabled** because class weighting already addresses the class imbalance without creating synthetic observations, keeping the final training pipeline simpler and directly interpretable.
-
-The data is split once using a stratified 80/20 split with random state 42:
-
-- Training: 1,176 rows (190 attrition cases)
-- Held-out test: 294 rows (47 attrition cases)
-
-Candidate models were compared using repeated stratified five-fold cross-validation with three repeats on the training partition. **Logistic Regression was the strongest among the fixed configurations tested** on mean Average Precision and ROC-AUC; this is not a claim that it is globally optimal because Random Forest and HistGradientBoosting were not separately hyperparameter-tuned:
-
-| Model | CV Average Precision (mean ± SD across 3 repeats) | CV ROC-AUC (mean ± SD across 3 repeats) |
+| Model | CV AP | CV ROC-AUC |
 |---|---:|---:|
 | Logistic Regression | **0.6130 ± 0.0065** | **0.8251 ± 0.0017** |
 | Hist Gradient Boosting | 0.5472 ± 0.0162 | 0.8005 ± 0.0098 |
 | Random Forest | 0.5460 ± 0.0091 | 0.8026 ± 0.0001 |
 | Dummy baseline | 0.1616 ± 0.0000 | 0.5000 ± 0.0000 |
 
-Threshold trade-offs were analyzed separately using training-set out-of-fold probabilities. The final test threshold was fixed at **0.50**; it was not selected from the held-out test labels. The OOF analysis showed that 0.60 raised F1 from 0.491 to 0.539 but reduced recall from 73.68% to 66.84%. Because no organization-specific cost ratio or review-capacity constraint was predefined, 0.50 was retained as the fixed reference threshold for the final evaluation rather than selecting a threshold by optimizing an arbitrary F1 objective. At 0.50, the final model flags 86 of 294 test records, a **29.25% flag rate (about 29%)**.
+Logistic Regression is therefore the strongest of the **fixed configurations tested**, not proof that it is globally optimal.
 
-## Final held-out test results
+## Threshold and final evaluation
 
-The Logistic Regression model was evaluated on the untouched 294-row test partition at threshold 0.50.
-
-| Metric | Test result |
-|---|---:|
-| Average Precision | **0.5612** |
-| ROC-AUC | **0.8032** |
-| Precision | **0.3488** |
-| Recall | **0.6383** |
-| F1 score | **0.4511** |
-
-Confusion matrix:
-
-|  | Predicted No | Predicted Yes |
-|---|---:|---:|
-| **Actual No** | 191 | 56 |
-| **Actual Yes** | 17 | 30 |
-
-The model identified 30 of 47 attrition cases and missed 17. It flagged 86 records, of which 56 were false positives. This supports interpreting the model as a screening or ranking prototype, not a definitive predictor of an individual's intent.
-
-Full detail: [final evaluation](docs/final_evaluation.md), [test metrics](reports/final_test_metrics.csv), and [confusion matrix](reports/final_test_confusion_matrix.csv).
-
-## Simple rules baseline
-
-A fixed, interpretable baseline flags an employee when **OverTime = Yes AND YearsAtCompany <= 3**. It is evaluated on the same held-out test partition as the frozen Logistic Regression, without fitting or tuning the rule. This provides a direct check of whether the ML model adds predictive value beyond a simple business-rule heuristic.
+Thresholds were evaluated using training-set out-of-fold predictions only. The final **0.50** threshold was fixed before held-out evaluation rather than selected by optimizing the test set. No organization-specific cost ratio or review-capacity constraint was predefined, so 0.50 is treated as a reference operating point, not an optimal business threshold.
 
 | Method | Precision | Recall | F1 | Flag rate |
 |---|---:|---:|---:|---:|
-| Logistic Regression | **0.3488** | **0.6383** | **0.4511** | 29.25% |
+| Logistic Regression | 0.3488 | **0.6383** | **0.4511** | 29.25% |
 | Overtime + short-tenure rule | **0.5484** | 0.3617 | 0.4359 | **10.54%** |
 
-The Logistic Regression provides substantially higher recall and slightly higher F1 than the rule, identifying 30 versus 17 of the 47 observed attrition cases. The rule has higher precision and a much lower review/flag rate. The rule cutoffs (`OverTime = Yes` and `YearsAtCompany <= 3`) were motivated by exploratory analysis of the full 1,470-row dataset, including the held-out test rows, so this is an **illustrative, post-hoc baseline rather than a pre-registered baseline**. This is evidence of a different coverage-versus-workload trade-off in the benchmark, not evidence that the model or rule is causally explanatory. Run `python src/rule_baseline.py`; the generated comparison is saved to `reports/rule_baseline_comparison.csv`.
+The model and rule have **comparable F1 (0.451 vs 0.436)** on only 47 positive test cases; this should not be described as a decisive ML win. The rule has higher precision and lower workload, while Logistic Regression has substantially higher recall. Because the rule cutoffs were motivated by full-dataset EDA, it is an **illustrative, post-hoc baseline**. AP/ROC-AUC for the binary rule score are not directly comparable to the model's ranking metrics.
 
-## Uncertainty analysis
+## Responsible AI and calibration
 
-A bootstrap analysis used 2,000 valid resamples of the frozen test predictions (seed 42). Selected 95% percentile intervals:
+Age, Gender and MaritalStatus remain in the primary benchmark-schema model. A controlled ablation removes all three while keeping the split, model and threshold unchanged:
 
-| Metric | Estimate | 95% interval |
+| Metric | Full | Without Age/Gender/MaritalStatus |
 |---|---:|---:|
-| Average Precision | 0.561 | 0.425–0.689 |
-| ROC-AUC | 0.803 | 0.727–0.873 |
-| Precision | 0.349 | 0.247–0.453 |
-| Recall | 0.638 | 0.489–0.778 |
+| Average Precision | 0.5612 | 0.5433 |
+| ROC-AUC | 0.8032 | 0.7801 |
+| Precision | 0.3488 | 0.3659 |
+| Recall | 0.6383 | 0.6383 |
 
-The bootstrap does not refit or tune the model; it quantifies sampling uncertainty around the fixed test predictions. The segment confidence intervals above use **Wilson 95% intervals**; subgroup recall intervals use **percentile-bootstrap 95% intervals** from 2,000 resamples per subgroup. [Full uncertainty table](reports/test_uncertainty.csv).
+The ablation is exploratory and was not used to rewrite the primary specification. Removing these fields also does not eliminate proxy concerns.
 
-## Model interpretation
+The held-out Brier score is **0.1561**, versus **0.1343** for a constant prediction equal to the test-set base rate. Because `class_weight="balanced"` can distort raw probabilities, the predicted probabilities are **not treated as calibrated risk estimates**; they are used as ranking scores.
 
-The final **primary benchmark-schema Logistic Regression** uses the available modeling features, including Age, Gender, and MaritalStatus, and has 51 transformed features. Coefficients were calculated from a pipeline fitted on the training partition only. The sensitive-attribute ablation below is an **exploratory diagnostic**, not a post-hoc change to the primary benchmark specification. Numeric features were standardized, so numeric odds ratios correspond to a one-standard-deviation increase, not a one-unit raw change.
+Subgroup diagnostics are descriptive. The 44+ subgroup recalls **3 of 11** attrition cases (27.27%; bootstrap 95% CI 0%–55.57%), so its estimate is highly uncertain.
 
-The largest positive associations included Laboratory Technician job role (coefficient 1.1943; odds ratio 3.3014), Sales Representative job role (1.1206; 3.0667), frequent business travel (0.7876; 2.1980), and overtime (0.7615; 2.1415). These are conditional model associations, not causal effects. Because the encoder retains all categories (`drop=None`) and the regularized model includes an intercept, individual categorical coefficients should not be read as simple causal effects or as comparisons against a manually selected reference category.
+## Limitations
 
-See [model interpretation](docs/model_interpretation.md) and [coefficient output](reports/model_interpretation.csv).
-
-## Sensitive attributes, ablation, and subgroup diagnostics
-
-`Age`, `Gender`, and `MaritalStatus` are included in the primary model because they are part of the benchmark schema and the primary specification uses the available modeling features rather than excluding these columns a priori. A controlled **sensitive-attribute ablation** removes all three from model inputs while keeping the same train/test split, model specification, and threshold. The original values are retained only for subgroup grouping in the evaluation. These attributes must not be used to make or justify employment decisions in a real HR setting.
-
-### Sensitive-attribute ablation
-
-| Metric | Full model | Without Age/Gender/MaritalStatus |
-|---|---:|---:|
-| Average Precision | **0.5612** | **0.5433** |
-| ROC-AUC | **0.8032** | **0.7801** |
-| Precision | **0.3488** | **0.3659** |
-| Recall | **0.6383** | **0.6383** |
-| Flag rate | **29.25%** | **27.89%** |
-| False positives | 56 | 52 |
-
-Removing the three attributes reduced Average Precision by 0.0179 and ROC-AUC by 0.0231, while recall remained unchanged at 63.83% at the fixed 0.50 threshold. Gender recall was also unchanged (Female 68.75%; Male 61.29%). Age-group recall varied after exclusion: 18–30 decreased from 77.78% to 72.22%, 31–36 from 72.73% to 63.64%, 37–43 increased from 71.43% to 85.71%, and 44+ increased from 27.27% to 36.36%. The 44+ change is only **3/11 to 4/11 attrition cases**, so it is a one-case difference rather than an improvement to celebrate. These subgroup counts are limited and diagnostic only; they do not establish production-level fairness.
-
-The ablated model is an **exploratory responsible-use diagnostic**, not a claim that the primary benchmark specification should be changed after seeing the held-out results. Removing Age, Gender, and MaritalStatus reduces Average Precision by 0.0179 and ROC-AUC by 0.0231 on this single test split while leaving recall unchanged at the fixed threshold. Those differences were **not formally tested** and should not be interpreted as evidence that the full model is fairer or that the ablated model is definitively superior. For a real HR context, direct use of these attributes would require organization-specific legal, privacy, and fairness review; excluding them also does not eliminate proxy concerns because variables such as `YearsAtCompany` and `TotalWorkingYears` may encode correlated information.
-
-The detailed methodology and generated results are documented in [docs/sensitive_attribute_ablation.md](docs/sensitive_attribute_ablation.md), [reports/sensitive_attribute_ablation.csv](reports/sensitive_attribute_ablation.csv), and [reports/sensitive_attribute_ablation_subgroups.csv](reports/sensitive_attribute_ablation_subgroups.csv).
-
-### Subgroup diagnostics
-
-The frozen model was evaluated descriptively across gender and age groups at the same 0.50 threshold. The subgroup script computes percentile-bootstrap 95% intervals for observed attrition rate and recall using 2,000 resamples per subgroup.
-
-| Group | Rows | Attrition cases | Precision | Recall | Recall 95% CI | False-positive rate |
-|---|---:|---:|---:|---:|---:|---:|
-| Female | 116 | 16 | 0.324 | 0.688 | 43.75–90.91% | 0.230 |
-| Male | 178 | 31 | 0.365 | 0.613 | 43.59–78.38% | 0.224 |
-| Age 18–30 | 77 | 18 | 0.438 | 0.778 | 57.14–94.74% | 0.305 |
-| Age 31–36 | 84 | 11 | 0.258 | 0.727 | 41.67–100.00% | 0.315 |
-| Age 37–43 | 72 | 7 | 0.357 | 0.714 | 28.57–100.00% | 0.138 |
-| Age 44+ | 61 | 11 | 0.333 | 0.273 | **0.00–55.57%** | 0.120 |
-
-The largest concern is the 44+ subgroup: the model recalls **3 of 11 attrition cases (27.27%; bootstrap 95% CI: 0.00–55.57%)**. The wide interval reflects the small number of attrition cases and should be read alongside the point estimate rather than treated as a precise group-level performance claim.
-
-This small, single-split diagnostic does not establish fairness or discrimination; uncertainty and a predefined fairness framework would be needed for a formal assessment. See [subgroup evaluation](docs/subgroup_evaluation.md) and [CSV results](reports/subgroup_evaluation.csv).
-
-## Responsible use and limitations
-
-- The dataset is fictional and does not establish real-world employee behavior.
-- Observational associations do not demonstrate causation.
-- A single held-out split has limited sample size, especially for subgroup analysis.
-- False positives are substantial at the fixed threshold.
-- Calibration was assessed on the held-out test data (see [calibration analysis](docs/calibration.md)); no recalibration was applied. The Brier score was **0.1561** on 294 test rows, compared with approximately **0.134** for a constant prediction equal to the observed test-set base rate (15.99%). The `class_weight="balanced"` training setup can make the raw probabilities unsuitable as calibrated risk estimates. **The predicted probabilities are not calibrated risk estimates; the model should be used as a ranking score.** This is a diagnostic result, not a production-grade calibration guarantee.
-- Organization-specific validation, privacy and access controls, fairness assessment, monitoring, governance, and human oversight would be prerequisites for any real application.
-
-The model must not be the sole basis for hiring, termination, promotion, compensation, disciplinary, or other employment decisions.
+- The IBM HR dataset is a fictional benchmark and is not evidence about a real employer.
+- The held-out test contains only 47 positive cases.
+- The test set was reused for several evaluation-only diagnostics after the model and threshold were frozen; results are disclosed rather than treated as independent validation.
+- The rule baseline is post-hoc.
+- The model is not calibrated and has substantial false positives at the fixed threshold.
+- Associations do not establish causation.
+- A real deployment would require time-based validation, calibration, drift monitoring, predefined fairness criteria, privacy/access controls, governance, consent, and human review.
 
 ## Reproducibility
 
-The project was developed with Python 3.10. Package versions are pinned in `requirements-lock.txt`; the smaller `requirements.txt` lists the main direct dependencies. Place the raw CSV at the path documented in [data/README.md](data/README.md), activate the virtual environment, and run commands from the repository root.
-
-Install dependencies:
+Python 3.10 is supported. Install the pinned environment:
 
 ```bash
 pip install -r requirements-lock.txt
@@ -258,15 +108,13 @@ Run tests:
 pytest -q
 ```
 
-Run the complete analysis pipeline:
+Run the full analysis:
 
 ```bash
 python src/run_all.py
 ```
 
-`run_all.py` also executes the rule baseline, segment statistics, and calibration stages, so the complete pipeline regenerates those artifacts.
-
-Or run the individual analysis stages:
+Or run individual stages from the repository root:
 
 ```bash
 python src/inspect_data.py
@@ -285,87 +133,55 @@ python src/segment_statistics.py
 python src/calibration.py
 ```
 
-The committed test suite currently contains **17 regression tests** covering dataset loading, target/drop-column validation, feature counts, reproducible stratified splitting, preprocessing structure, missing-value safety, pipeline structure, probability output, binary predictions, pipeline scaler fitting on training data only, committed metrics consistent with the confusion matrix, the calibration base-rate Brier calculation, and the project thresholding function. GitHub Actions runs the regression suite on pushes to `main` and pull requests using the pinned lock file on Ubuntu Linux.
+The raw CSV is intentionally not committed. See [data/README.md](data/README.md) and [docs/data_source.md](docs/data_source.md).
 
 ## Repository structure
 
 ```text
 employee-attrition-analysis/
-├── data/
-│   └── README.md
+├── data/README.md
 ├── docs/
-│   ├── recruiter_summary.md
-│   ├── dashboard.md
+│   ├── project_summary.md
+│   ├── results_workbook.md
 │   ├── calibration.md
 │   ├── data_source.md
 │   ├── eda_findings.md
 │   ├── final_evaluation.md
-│   ├── model_interpretation.md
 │   ├── main_segment_statistics.md
+│   ├── model_interpretation.md
 │   ├── project_charter.md
 │   ├── rule_baseline.md
 │   ├── subgroup_evaluation.md
 │   ├── threshold_evaluation.md
 │   └── sensitive_attribute_ablation.md
-├── .github/
-│   └── workflows/
-│       └── ci.yml
+├── .github/workflows/ci.yml
 ├── reports/
 │   ├── figures/
-│   │   ├── 01_attrition_distribution.png
-│   │   ├── attrition_by_jobrole.png
-│   │   ├── calibration_curve.png
-│   │   ├── final_test_confusion_matrix.png
-│   │   └── model_coefficients.png
-│   ├── baseline_cv_results.csv
-│   ├── categorical_attrition_rates.csv
-│   ├── column_validation.txt
-│   ├── calibration_metrics.csv
-│   ├── data_inspection.txt
-│   ├── eda_summary.txt
-│   ├── final_test_confusion_matrix.csv
-│   ├── final_test_metrics.csv
-│   ├── model_comparison.csv
-│   ├── model_comparison_repeats.csv
 │   ├── main_segment_statistics.csv
-│   ├── model_interpretation.csv
-│   ├── numeric_attrition_rates.csv
-│   ├── preprocessing_summary.txt
-│   ├── relationship_summary.txt
 │   ├── rule_baseline_comparison.csv
-│   ├── split_summary.txt
-│   ├── subgroup_evaluation.csv
+│   ├── calibration_metrics.csv
+│   ├── final_test_metrics.csv
+│   ├── final_test_confusion_matrix.csv
 │   ├── sensitive_attribute_ablation.csv
 │   ├── sensitive_attribute_ablation_subgroups.csv
+│   ├── subgroup_evaluation.csv
 │   ├── test_uncertainty.csv
-│   └── threshold_evaluation.csv
+│   └── ...
 ├── src/
-│   ├── compare_models.py
-│   ├── data_prep.py
-│   ├── evaluate_thresholds.py
-│   ├── explore_data.py
-│   ├── explore_relationships.py
-│   ├── final_evaluation.py
-│   ├── inspect_data.py
-│   ├── model_interpretation.py
-│   ├── model_zoo.py
-│   ├── preprocessing.py
-│   ├── subgroup_evaluation.py
-│   ├── sensitive_attribute_ablation.py
+│   ├── run_all.py
 │   ├── rule_baseline.py
 │   ├── segment_statistics.py
 │   ├── calibration.py
-│   ├── test_uncertainty.py
-│   ├── train_models.py
-│   ├── run_all.py
-│   └── validate_columns.py
+│   └── ...
 ├── tests/
 │   ├── test_data_pipeline.py
 │   └── test_behavior.py
 ├── dashboard/
 │   └── Employee_Attrition_Recruiter_Dashboard.xlsx
-├── .gitignore
-├── LICENSE
+├── requirements.txt
 ├── requirements-lock.txt
-└── requirements.txt
+├── LICENSE
+└── .gitignore
 ```
+
+The Excel file is a **static results workbook**, not an interactive BI dashboard. The Python pipeline and CSV outputs remain the analytical source of truth.
