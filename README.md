@@ -303,6 +303,7 @@ employee-attrition-analysis/
 │   ├── model_interpretation.md
 │   ├── main_segment_statistics.md
 │   ├── project_charter.md
+│   ├── rule_baseline.md
 │   ├── subgroup_evaluation.md
 │   ├── threshold_evaluation.md
 │   └── sensitive_attribute_ablation.md
