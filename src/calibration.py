@@ -15,7 +15,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from data_prep import get_split
 from model_zoo import get_models
 from preprocessing import build_model_pipeline
-
+\n\ndef base_rate_brier_score(y_true):\n    """Return the Brier score for a constant prediction equal to the observed base rate."""\n    y = np.asarray(y_true)\n    base_rate = float(y.mean())\n    return brier_score_loss(y, np.full(len(y), base_rate))\n
 
 def main():
     X_train, X_test, y_train, y_test = get_split()
