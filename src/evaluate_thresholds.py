@@ -87,7 +87,7 @@ def main():
         )
 
         for threshold in THRESHOLDS:
-            predictions = (oof_probabilities >= threshold).astype(int)
+            predictions = apply_threshold(oof_probabilities, threshold)
 
             tn, fp, fn, tp = confusion_matrix(
                 y_train,
