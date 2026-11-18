@@ -24,7 +24,7 @@ An end-to-end analytical prototype for understanding employee attrition patterns
 | Test Average Precision | **0.5612** |
 | Test precision / recall | **0.3488 / 0.6383** |
 | Bootstrap resamples | 2,000 |
-| Regression tests | **15 committed tests** |
+| Regression tests | **17 committed tests** |
 
 The source dataset is a **fictional benchmark**. These findings are not claims about IBM's actual workforce or any real employer.
 
@@ -285,7 +285,7 @@ python src/segment_statistics.py
 python src/calibration.py
 ```
 
-The committed test suite currently contains **15 regression tests** covering dataset loading, target/drop-column validation, feature counts, reproducible stratified splitting, preprocessing structure, missing-value safety, pipeline structure, probability output, binary predictions, pipeline scaler fitting on training data only, and committed metrics consistent with the confusion matrix. GitHub Actions runs the regression suite on pushes to `main` and pull requests using the pinned lock file on Ubuntu Linux.
+The committed test suite currently contains **17 regression tests** covering dataset loading, target/drop-column validation, feature counts, reproducible stratified splitting, preprocessing structure, missing-value safety, pipeline structure, probability output, binary predictions, pipeline scaler fitting on training data only, committed metrics consistent with the confusion matrix, the calibration base-rate Brier calculation, and the project thresholding function. GitHub Actions runs the regression suite on pushes to `main` and pull requests using the pinned lock file on Ubuntu Linux.
 
 ## Repository structure
 
