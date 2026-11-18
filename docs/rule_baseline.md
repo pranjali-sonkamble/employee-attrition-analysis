@@ -6,7 +6,7 @@ The project now includes a deliberately simple, interpretable baseline:
 
 **flag = OverTime == "Yes" AND YearsAtCompany <= 3**
 
-The rule is fixed in advance and requires no model fitting. It is evaluated on the same held-out 294-row test partition as the frozen Logistic Regression.
+The rule is an illustrative, post-hoc baseline and requires no model fitting. It is evaluated on the same held-out 294-row test partition as the frozen Logistic Regression.
 
 ## Why it matters
 
