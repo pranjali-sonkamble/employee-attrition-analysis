@@ -29,6 +29,12 @@ N_SPLITS = 5
 THRESHOLDS = np.arange(0.10, 0.61, 0.05)
 
 
+def apply_threshold(probabilities, threshold):
+    """Convert predicted probabilities to binary flags using the project threshold rule."""
+    probabilities = np.asarray(probabilities)
+    return (probabilities >= threshold).astype(int)
+
+
 def main():
     X_train, _, y_train, _ = get_split()
 
@@ -79,7 +85,8 @@ def main():
             n_jobs=1,
         )[:, 1]
 
-        print(f"\n{name}")
+        print(f"
+{name}")
         print("-" * len(name))
         print(
             "OOF average precision: "
@@ -120,7 +127,8 @@ def main():
     output_path.parent.mkdir(parents=True, exist_ok=True)
     results_df.to_csv(output_path, index=False)
 
-    print(f"\nSaved all threshold results to {output_path}")
+    print(f"
+Saved all threshold results to {output_path}")
 
     for name in models:
         model_results = results_df[
@@ -130,7 +138,8 @@ def main():
             ascending=[False, False],
         )
 
-        print(f"\nTop recall results: {name}")
+        print(f"
+Top recall results: {name}")
         print(
             model_results.head(5).to_string(
                 index=False,
@@ -139,7 +148,8 @@ def main():
         )
 
     print(
-        "\nImportant: thresholds were evaluated using training-set "
+        "
+Important: thresholds were evaluated using training-set "
         "out-of-fold predictions only. The held-out test set was not used."
     )
 
