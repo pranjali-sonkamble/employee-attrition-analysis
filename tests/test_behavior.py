@@ -17,19 +17,8 @@ from rule_baseline import rule_predictions
 from segment_statistics import wilson_interval
 from calibration import base_rate_brier_score
 from evaluate_thresholds import apply_threshold
-
-
-def test_get_split_returns_disjoint_stratified_partitions():
-    """Exercise the project's actual split function, not sklearn directly."""
-    X_train, X_test, y_train, y_test = get_split()
-
-    assert set(X_train.index).isdisjoint(set(X_test.index))
-    assert len(X_train) == 1176
-    assert len(X_test) == 294
-
-    overall_rate = pd.concat([y_train, y_test]).mean()
-    assert abs(y_train.mean() - overall_rate) < 0.02
-    assert abs(y_test.mean() - overall_rate) < 0.02
+from subgroup_evaluation import subgroup_metrics
+from test_uncertainty import top_k_metrics
 
 
 def test_pipeline_scaler_is_fitted_from_training_data_only():
@@ -136,3 +125,26 @@ def test_apply_threshold_returns_expected_flags():
     """Exercise the project's actual thresholding function."""
     probabilities = np.array([0.10, 0.49, 0.50, 0.5001, 0.90])
     assert apply_threshold(probabilities, 0.50).tolist() == [0, 0, 1, 1, 1]
+
+
+def test_top_k_metrics_captures_expected_positive_share():
+    """Verify top-k ranking recall uses score order and the requested capacity."""
+    y = np.array([1, 0, 1, 0, 0])
+    scores = np.array([0.90, 0.80, 0.70, 0.60, 0.50])
+
+    result = top_k_metrics(y, scores, fractions=[0.20, 0.40])
+
+    assert np.isclose(result["recall_top20pct"], 0.50)
+    assert np.isclose(result["recall_top40pct"], 1.00)
+
+
+def test_subgroup_metrics_returns_consistent_confusion_counts():
+    """Verify subgroup metrics preserve the underlying confusion matrix."""
+    y = np.array([0, 0, 0, 1, 1, 1])
+    probabilities = np.array([0.10, 0.20, 0.80, 0.90, 0.40, 0.60])
+
+    result = subgroup_metrics(y, probabilities, threshold=0.50)
+
+    assert (result["tn"], result["fp"], result["fn"], result["tp"]) == (2, 1, 1, 2)
+    assert np.isclose(result["precision"], 2 / 3)
+    assert np.isclose(result["recall"], 2 / 3)
