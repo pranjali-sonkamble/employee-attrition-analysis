@@ -15,7 +15,14 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from data_prep import get_split
 from model_zoo import get_models
 from preprocessing import build_model_pipeline
-\n\ndef base_rate_brier_score(y_true):\n    """Return the Brier score for a constant prediction equal to the observed base rate."""\n    y = np.asarray(y_true)\n    base_rate = float(y.mean())\n    return brier_score_loss(y, np.full(len(y), base_rate))\n
+
+
+def base_rate_brier_score(y_true):
+    """Return the Brier score for a constant prediction equal to the observed base rate."""
+    y = np.asarray(y_true)
+    base_rate = float(y.mean())
+    return brier_score_loss(y, np.full(len(y), base_rate))
+
 
 def main():
     X_train, X_test, y_train, y_test = get_split()
@@ -31,9 +38,7 @@ def main():
 
     brier = brier_score_loss(y_test, probabilities)
     base_rate = float(y_test.mean())
-    base_rate_brier = brier_score_loss(
-        y_test, np.full(len(y_test), base_rate)
-    )
+    base_rate_brier = base_rate_brier_score(y_test)
 
     Path("reports/figures").mkdir(parents=True, exist_ok=True)
     fig, ax = plt.subplots(figsize=(7, 6))
