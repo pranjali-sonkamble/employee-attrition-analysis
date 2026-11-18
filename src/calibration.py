@@ -30,6 +30,10 @@ def main():
     probabilities = pipeline.predict_proba(X_test)[:, 1]
 
     brier = brier_score_loss(y_test, probabilities)
+    base_rate = float(y_test.mean())
+    base_rate_brier = brier_score_loss(
+        y_test, np.full(len(y_test), base_rate)
+    )
 
     Path("reports/figures").mkdir(parents=True, exist_ok=True)
     fig, ax = plt.subplots(figsize=(7, 6))
@@ -54,6 +58,8 @@ def main():
         "model": "Logistic Regression",
         "test_rows": len(y_test),
         "brier_score": brier,
+        "base_rate": base_rate,
+        "base_rate_brier": base_rate_brier,
         "n_bins": 10,
         "strategy": "uniform",
     }])
@@ -63,6 +69,8 @@ def main():
     print("====================")
     print(f"Test rows: {len(y_test)}")
     print(f"Brier score: {brier:.4f}")
+    print(f"Observed base rate: {base_rate:.4f}")
+    print(f"Constant base-rate Brier score: {base_rate_brier:.4f}")
     print(f"Saved: {output}")
 
 
