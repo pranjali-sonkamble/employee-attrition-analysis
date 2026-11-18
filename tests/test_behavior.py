@@ -15,6 +15,8 @@ from data_prep import get_split
 from preprocessing import build_model_pipeline
 from rule_baseline import rule_predictions
 from segment_statistics import wilson_interval
+from calibration import base_rate_brier_score
+from evaluate_thresholds import apply_threshold
 
 
 def test_get_split_returns_disjoint_stratified_partitions():
