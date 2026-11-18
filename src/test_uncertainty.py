@@ -25,6 +25,23 @@ EXPECTED = {
 }
 
 
+def top_k_metrics(y_true, scores, fractions=FRACTIONS):
+    """Return recall captured when reviewing the top k fraction by score."""
+    y = np.asarray(y_true)
+    scores = np.asarray(scores)
+    order = np.argsort(-scores, kind="stable")
+
+    if y.sum() == 0:
+        raise ValueError("top-k recall requires at least one positive case")
+
+    return {
+        f"recall_top{int(round(f * 100))}pct": (
+            y[order[: int(round(len(y) * f))]].sum() / y.sum()
+        )
+        for f in fractions
+    }
+
+
 def point_metrics(y, p):
     pred = (p >= THRESHOLD).astype(int)
 
@@ -38,14 +55,7 @@ def point_metrics(y, p):
         "precision": tp / (tp + fp) if (tp + fp) else np.nan,
         "recall": tp / (tp + fn),
     }
-
-    order = np.argsort(-p, kind="stable")
-
-    for f in FRACTIONS:
-        k = int(round(len(y) * f))
-        out[
-            f"recall_top{int(round(f * 100))}pct"
-        ] = y[order[:k]].sum() / y.sum()
+    out.update(top_k_metrics(y, p))
 
     return out, (
         int(tn),
