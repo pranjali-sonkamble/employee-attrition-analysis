@@ -85,8 +85,7 @@ def main():
             n_jobs=1,
         )[:, 1]
 
-        print(f"
-{name}")
+        print(f"\n{name}")
         print("-" * len(name))
         print(
             "OOF average precision: "
@@ -127,8 +126,7 @@ def main():
     output_path.parent.mkdir(parents=True, exist_ok=True)
     results_df.to_csv(output_path, index=False)
 
-    print(f"
-Saved all threshold results to {output_path}")
+    print(f"\nSaved all threshold results to {output_path}")
 
     for name in models:
         model_results = results_df[
@@ -138,8 +136,7 @@ Saved all threshold results to {output_path}")
             ascending=[False, False],
         )
 
-        print(f"
-Top recall results: {name}")
+        print(f"\nTop recall results: {name}")
         print(
             model_results.head(5).to_string(
                 index=False,
@@ -148,8 +145,7 @@ Top recall results: {name}")
         )
 
     print(
-        "
-Important: thresholds were evaluated using training-set "
+        "\nImportant: thresholds were evaluated using training-set "
         "out-of-fold predictions only. The held-out test set was not used."
     )
 
